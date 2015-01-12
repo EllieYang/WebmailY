@@ -1,1 +1,4 @@
-//DO something here
+(function() {
+  alert('hello');
+
+}).call(this);
