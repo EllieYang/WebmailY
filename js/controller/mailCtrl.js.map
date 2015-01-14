@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "mailCtrl.js",
+  "sourceRoot": "../../src/controller/",
+  "sources": [
+    "mailCtrl.coffee"
+  ],
+  "names": [],
+  "mappings": "AAAA;AAAA,MAAA,iBAAA;;AAAA,EAAA,OAAO,CAAC,GAAR,CAAY,2BAAZ,CAAA,CAAA;;AAAA,EACA,iBAAA,GAAoB,SAAC,QAAD,GAAA;WAChB,KAAA,CAAM,QAAQ,CAAC,SAAf,EADgB;EAAA,CADpB,CAAA;;AAAA,EAGA,iBAAA,CAAkB,MAAlB,CAHA,CAAA;AAAA"
+}

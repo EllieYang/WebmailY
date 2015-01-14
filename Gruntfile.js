@@ -8,11 +8,13 @@ module.exports = function(grunt) {
             // 2. Configuration for concatinating files goes here.
             dist: {
                 src: [
-                    'js/libs/*.js', // All JS in the libs folder
-                    'js/webmaily.js',  // This specific file
-                    'js/webmailcoffee.js'
+                    'js/lib/*.js', // All JS in the libs folder
+                    'js/webmaily.js'  // This specific file
                 ],
                 dest: 'js/build/webmaily.js',
+            },
+            files:{
+                'js/webmailAngular.js':['js/controller/*.js','js/directives/*.js']
             }
         },
         
@@ -33,14 +35,15 @@ module.exports = function(grunt) {
         },
         
         coffee:{
-            glob_to_multiple:{
-                expand:true,
-                flatten:true,
-                cwd:'src/',
-                src:['*.coffee'],
-                dest: 'js/',
-                ext:'.js'
+            compileWithMaps: {
+                options: {
+                    sourceMap: true
+            },
+            files: {
+                'js/controller/mailCtrl.js': ['src/controller/*.coffee'],
+                'js/directives/mailDir.js': ['src/directives/*.coffee']
             }
+            },
         },
         
         watch: {
@@ -48,7 +51,11 @@ module.exports = function(grunt) {
                 livereload:true,
             },
             scripts: {
-                files: ['js/*.js'],
+                files: [
+                    'js/*.js',
+                    'js/controller/*.js',
+                    'js/directives/*.js'
+                ],
                 tasks: ['concat', 'uglify'],
                 options: {
                     spawn: false,
@@ -85,7 +92,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-coffee');
 
     // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('default', ['coffee','concat','uglify']);
+    grunt.registerTask('default', ['coffee','concat']);
     grunt.registerTask('dev', ['connect:dev']);
 
 };

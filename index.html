@@ -1,11 +1,36 @@
 <!DOCTYPE html>
 <html>
   <head>
-      <script src="js/build/webmaily.min.js"></script>
+<!--      <script src="js/build/webmaily.min.js"></script>-->
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+      <script src="js/webmailAngular.js"></script>
+      <script src="js/webmailAngularCtrl.js"></script>
       <link type="text/css" rel="stylesheet" href="css/build/webmaily.css">
   </head> 
   <body>
-    <div>Hello There! There is something good
+    <div ng-app="webmaily" ng-controller="validateController">
+        <p>Hello There! There is something good. The first line should be inbox.</p>
+        <form novalidate name="loginForm">
+            First Name:<br/>
+            <input type="text" ng-model="user" name="user" required>
+            <span style="color:red" ng-show="loginForm.user.$dirty && loginForm.user.$invalid">
+            <span ng-show="loginForm.user.$error.required">Username is required.</span>
+            Email:<br/></span>
+            <input type="email" ng-model="email" name="email" required>
+            <span style="color:red" ng-show="loginForm.email.$dirty && loginForm.email.$invalid">
+            <span ng-show="loginForm.email.$error.required">Email is required.</span>
+            <span ng-show="loginForm.email.$error.email">Invalid email address.</span>
+            </span>
+            <br/>
+            <br/>
+            <p>
+                <input type="submit" ng-disabled="loginForm.user.$dirty && loginForm.user.$invalid || loginForm.email.$dirty && loginForm.email.$invalid">
+            </p>
+        </form>
+        <div>
+            <div ng-include="'template/inbox.html'"></div>
+            <div ng-include="'template/menu.html'"></div>
+        </div>
     </div>
   </body>
 </html>
