@@ -1,4 +1,9 @@
 $body-color: #666;
-body{
+body#webmail{
     color:$body-color;
+    text-align:left;
+}
+div.headerDiv p{
+    margin:0;
+    margin-top:5px;
 }

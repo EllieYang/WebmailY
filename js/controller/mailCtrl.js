@@ -1,7 +1,7 @@
-webmaily.controller("mailController",['$scope','googleLogin'],function($scope,googleLogin){
+webmaily.controller("mailController",function($scope){
     
     $scope.login = function() {
-        googleLogin.login();
+        //googleLogin.login();
     };
       //Setting up Google Authorization
 //      var clientId = '130554426228-5n2t4fcm2k9g977mvodfh9vo9591u69t.apps.googleusercontent.com';

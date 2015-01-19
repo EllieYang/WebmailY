@@ -1,44 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-<!--<script src="js/build/webmaily.min.js"></script>-->
+      <link type="text/css" rel="stylesheet" href="css/build/webmaily.css">
+  </head> 
+  <body id="webmail">
+      <button id="authorize-button" style="visibility: hidden">Sign in through Google</button>
+      <!--<script src="js/build/webmaily.min.js"></script>-->
       <script src="js/lib/jquery-2.1.3.min.js"></script>
       <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
       <script src="js/webmailAngular.js"></script>
-      <script src="js/webmailAngularCtrl.js"></script>
       <script src="js/controller/mailCtrl.js"></script>
       <script src="js/lib/base64.js"></script>
-      <link type="text/css" rel="stylesheet" href="css/build/webmaily.css">
-  </head> 
-  <body>
-    <div ng-app="webmaily" >
-        <div ng-controller="validateController">
-        <p>Hello There! There is something good. The first line should be inbox.</p>
-        <form novalidate name="loginForm">
-            First Name:<br/>
-            <input type="text" ng-model="user" name="user" required>
-            <span style="color:red" ng-show="loginForm.user.$dirty && loginForm.user.$invalid">
-            <span ng-show="loginForm.user.$error.required">Username is required.</span>
-            Email:<br/></span>
-            <input type="email" ng-model="email" name="email" required>
-            <span style="color:red" ng-show="loginForm.email.$dirty && loginForm.email.$invalid">
-            <span ng-show="loginForm.email.$error.required">Email is required.</span>
-            <span ng-show="loginForm.email.$error.email">Invalid email address.</span>
-            </span>
-            <br/>
-            <br/>
-            <p> 
-                <input type="submit" ng-disabled="loginForm.user.$dirty && loginForm.user.$invalid || loginForm.email.$dirty && loginForm.email.$invalid">
-            </p>
-        </form>
-        </div>
-        
+      <script src="js/webmailGapi.js"></script>
+      <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+      
+      <div ng-app="webmaily" >
         <div ng-controller= "mailController" >
             <div ng-include="'template/inbox.html'"></div>
             <div ng-include="'template/menu.html'"></div>
         </div>
-        
     </div>
   </body>
 </html>
