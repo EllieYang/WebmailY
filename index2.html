@@ -5,22 +5,13 @@
   </head>
   <body>
     <button id="authorize-button" style="visibility: hidden">Sign in through Google</button>
+    <script src="js/lib/jquery-2.1.3.min.js"></script>
+    <script src="js/lib/base64.js"></script>
     <script type="text/javascript">
-      // Enter a client ID for a web application from the Google Developer Console.
-      // The provided clientId will only work if the sample is run directly from
-      // https://google-api-javascript-client.googlecode.com/hg/samples/authSample.html
-      // In your Developer Console project, add a JavaScript origin that corresponds to the domain
-      // where you will be running the script.
+      
+      //Setting up Google Authorization
       var clientId = '130554426228-5n2t4fcm2k9g977mvodfh9vo9591u69t.apps.googleusercontent.com';
-
-      // Enter the API key from the Google Develoepr Console - to handle any unauthenticated
-      // requests in the code.
-      // The provided key works for this sample only when run from
-      // https://google-api-javascript-client.googlecode.com/hg/samples/authSample.html
-      // To use in your own application, replace this API key with your own.
       var apiKey = 'AIzaSyCeE7WUuVzyOQUlQuRuSZ5O_h_cw4MLn2k';
-
-      // To enter one or more authentication scopes, refer to the documentation for the API.
       var scopes = 'https://www.googleapis.com/auth/gmail.readonly';
 
       // Use a button to handle authentication the first time.
@@ -78,7 +69,16 @@
                                     senderList.innerHTML += header.value+'<br/>';
                                 }
                             });
-                            bodyData.innerHTML += window.atob(content.payload.body.data) + '<br/>';
+                            console.log (content);
+                            var bodyVal;
+                            if (content.payload.mimeType == 'text/html' || content.payload.mimeType == 'text/plain'){
+                                bodyVal = Base64.decode(content.payload.body.data.replace(/\-/g, '+').replace(/\_/g, '/'));
+                                
+                            }else if(content.payload.mimeType == 'multipart/alternative'){
+                                bodyVal = Base64.decode(content.payload.parts[1].body.data.replace(/\-/g, '+').replace(/\_/g, '/'));
+                                
+                            }
+                            bodyData.innerHTML += bodyVal;
                         }
                         
                     });
