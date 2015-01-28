@@ -196,7 +196,6 @@ if (this['Meteor']) {
   var clientId = '130554426228-5n2t4fcm2k9g977mvodfh9vo9591u69t.apps.googleusercontent.com';
   var apiKey = 'AIzaSyCeE7WUuVzyOQUlQuRuSZ5O_h_cw4MLn2k';
   var scopes = 'https://www.googleapis.com/auth/gmail.readonly';
-
   // Use a button to handle authentication the first time.
   function handleClientLoad() {
     gapi.client.setApiKey(apiKey);
@@ -207,10 +206,19 @@ if (this['Meteor']) {
     gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: true}, handleAuthResult);
   }
 
+  //Set values inside an Angular scope.
+  function change(name,value) {  
+    var scope = angular.element($("#controllerTag")).scope();
+    scope.$apply(function(){
+        scope[name] = value;
+    })
+  }
+
   function handleAuthResult(authResult) {
     var authorizeButton = document.getElementById('authorize-button');
     if (authResult && !authResult.error) {
       authorizeButton.style.visibility = 'hidden';
+      change("googleApi","lalalalalla");
       makeApiCall();
     } else {
       authorizeButton.style.visibility = '';

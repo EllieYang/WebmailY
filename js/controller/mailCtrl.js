@@ -1,3 +1,5 @@
 webmaily.controller("mailController",function($scope){
-    $scope.greeting = "Hola";
+    $scope.googleApi = "Hola";
+    //$scope.googleApi = jQuery.data($(document),'googleApi');
+   
 });

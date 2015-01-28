@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="webmaily">
   <head>
       <link type="text/css" rel="stylesheet" href="css/build/webmaily.css">
+      <title>http://0.0.0.0:91</title>
   </head> 
   <body id="webmail">
       <button id="authorize-button" style="visibility: hidden">Sign in through Google</button>
@@ -15,8 +16,8 @@
       <script src="js/module/webmailAngular.js"></script>
       <script src="js/controller/mailCtrl.js"></script>
       
-      <div ng-app="webmaily" >
-        <div ng-controller= "mailController" >
+      <div>
+        <div ng-controller= "mailController" id="controllerTag">
             <div ng-include="'template/inbox.html'"></div>
             <div ng-include="'template/menu.html'"></div>
         </div>
