@@ -13,15 +13,7 @@
     gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: true}, handleAuthResult);
   }
 
-  //Set values inside an Angular scope.
-  function change(name,value) {  
-    var scope = angular.element($("#controllerTag")).scope();
-    scope.$apply(function(){
-        scope[name] = value;
-    })
-  }
-
-  function handleAuthResult(authResult) {
+    function handleAuthResult(authResult) {
     var authorizeButton = document.getElementById('authorize-button');
     if (authResult && !authResult.error) {
       authorizeButton.style.visibility = 'hidden';
@@ -36,6 +28,15 @@
   function handleAuthClick(event) {
     gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, handleAuthResult);
     return false;
+  }
+
+//Set values inside an Angular scope.
+
+  function change(name,value) {  
+      var scope = angular.element($("#controllerTag")).scope();
+      scope.$apply(function(){
+        scope[name] = value;
+    })
   }
 
   // Load the API and make an API call.  Display the results on the screen.
@@ -64,13 +65,13 @@
         });
 
           
-        //Get Email Messages
-        var request = gapi.client.gmail.users.messages.list({
+        //Get Email Threads
+        var request = gapi.client.gmail.users.threads.list({
             'userId':'me'
         });
         request.execute(function(resp){
           
-            resp.messages.forEach(function(message){
+            resp.threads.forEach(function(thread){
                 var messageDiv = document.createElement('div');
                 messageDiv.className = 'messageDiv';
                 var headerDiv = document.createElement('div');
@@ -79,43 +80,40 @@
                 snippetDiv.className = 'snippetDiv';
                 var senderDiv = document.createElement('p');
                 var subjectDiv = document.createElement('p');
-                
-                            
-                var emailMessage = gapi.client.gmail.users.messages.get({'userId':'me','id':message.id});
-                emailMessage.execute(function(content){
-                    if(content.payload == null){
-                        console.log("payload null");
-                    }else {
-                        content.payload.headers.forEach(function(header){
-                            if(header.name == "Subject"){
-                               // console.log(header.value);
-                                subjectDiv.innerHTML += '<label>Subject:</label> '+ header.value;
+                          
+                var emailThreads = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
+                emailThreads.execute(function(content){
+                    var lastMessage = content.messages[(content.messages.length-1)];
+                    
+                    //Get label of this thread
+                    for (var index = lastMessage.labelIds.length-1;index>-1;index--){
+                        //Loop from the end because customized label comes last
+                        if (lastMessage.labelIds[index]==angular.element($("#controllerTag")).scope().labelId){
+                            console.log(lastMessage.labelIds[index]);
+                            //Show snippet of this thread, i.e. snippet of the last message in this thread
+                            if (lastMessage.snippet){
+                                snippetDiv.innerHTML += lastMessage.snippet + '...';   
+                            }else{
+                                snippetDiv.innerHTML += 'This message has no content';  
                             }
-                        }); 
-                        content.payload.headers.forEach(function(header){
-                            if(header.name == "From"){
-                                //console.log(header.value);
-                                senderDiv.innerHTML += '<label>From:</label> '+ header.value;
+                            //Show header information related to this thread
+                            if(lastMessage.payload == null){
+                                console.log("payload null");
+                            }else {
+                                lastMessage.payload.headers.forEach(function(header){
+                                    if(header.name == "Subject"){
+                                       // console.log(header.value);
+                                        subjectDiv.innerHTML += '<label>Subject:</label> '+ header.value;
+                                    }
+                                }); 
+                                lastMessage.payload.headers.forEach(function(header){
+                                    if(header.name == "From"){
+                                        //console.log(header.value);
+                                        senderDiv.innerHTML += '<label>From:</label> '+ header.value;
+                                    }
+                                });
                             }
-                        });
-                        var snippetval;
-                        if (content.snippet){
-                            snippetval = content.snippet;
-                           // console.log(snippetval);
-                            snippetDiv.innerHTML += snippetval + '...';   
-                        }else{
-                            snippetDiv.innerHTML += 'This message has no content';  
                         }
-                      //console.log (content);
-                        /*var bodyVal;
-                        if (content.payload.mimeType == 'text/html' || content.payload.mimeType == 'text/plain'){
-                            bodyVal = Base64.decode(content.payload.body.data.replace(/\-/g, '+').replace(/\_/g, '/'));
-                            
-                        }else if(content.payload.mimeType == 'multipart/alternative'){
-                            bodyVal = Base64.decode(content.payload.parts[1].body.data.replace(/\-/g, '+').replace(/\_/g, '/'));
-                            
-                        }
-                        bodyData.innerHTML += bodyVal;*/
                     }
                     
                 });
@@ -125,15 +123,12 @@
                 headerDiv.appendChild(subjectDiv);
                
                 document.getElementById("content").appendChild(messageDiv);
-                //document.getElementById("content").innerHTML += '<hr/>' + messageDiv;
             });
-            //document.getElementById("content").appendChild(textNode);
         });
       });
   }
 function showLabels(labels){
     labels.forEach(function(label){
-        
         if(label.type == 'user'){
             var labelDiv = document.createElement('span');
             labelDiv.className = 'labelDiv';
