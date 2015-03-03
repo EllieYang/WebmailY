@@ -72,56 +72,70 @@
   });
 }
 
-var threadsFetcher = {
+function getAllThreads(labels){
     
-    threadArray: [],
-    
-    fetch: function (label,thread){
-
-        gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id}).then(function(response){
-            
-            var content = response.result;
-            var lastMsg = content.messages[(content.messages.length-1)];
-            if(lastMsg.labelIds[lastMsg.labelIds.length-1] == label.id){
-                    var pushedThread = {"thread":thread};
-                    pushedThread.lastMsg = {"msg":lastMsg,"header":{},"snippet":''};
-                    pushedThread.lastMsg.snippet = lastMsg.snippet ? lastMsg.snippet : 'This message has no content';
-                    if(lastMsg.payload){
-                        lastMsg.payload.headers.forEach(function(header){
-                            if(header.name == "Subject"){
-                                pushedThread.lastMsg.header.subject = header.value;
-                            }else if(header.name == "From"){
-                                pushedThread.lastMsg.header.sender = header.value;
-                            }
-                        }); 
-                    }else{
-                        console.log("payload null");
-                    }
-                    this.threadArray.push(pushedThread);
-                }
-        },function(){
-            console.log("Something went wrong");
-        },this);
-
-    }
-};
-
-function getAllThreads(){
-    
+    var scope = angular.element($("#controllerTag")).scope();
     var req1 = gapi.client.gmail.users.threads.list({
         'userId':'me'
      });
-    req1.then(function(resp){
-        change("allThreads",resp.result.threads);
-    });
+    req1.execute(function(resp){
+        if(labels){
+            labels.forEach(function(label,index){
+                resp.result.threads.forEach(function(thread){
+                var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
+                threadResp.execute(function(response){
+                    var content = response.result;
+                    var lastMsg = content.messages[(content.messages.length-1)];
+                    
+                    if(lastMsg.labelIds && lastMsg.labelIds[lastMsg.labelIds.length-1] == label.id){
+
+                        var pushedThread = {"thread":thread};
+                        pushedThread.lastMsg = {"msg":lastMsg,"header":{},"snippet":''};
+                        pushedThread.lastMsg.snippet = lastMsg.snippet ? lastMsg.snippet : 'This message has no content';
+                        if(lastMsg.payload){
+                            lastMsg.payload.headers.forEach(function(header){
+                                if(header.name == "Subject"){
+                                    pushedThread.lastMsg.header.subject = header.value;
+                                }else if(header.name == "From"){
+                                    pushedThread.lastMsg.header.sender = header.value;
+                                }
+                            }); 
+                    }else{
+                        console.log("payload null");
+                    }
+                        scope.$apply(function(){
+                            scope["userSpaces"][index]["threads"].push(pushedThread);
+                        })
+                    }
+                    
+                });
+            });
+            });
+        }    
+    })
 }
 
-function showLabels(labels){
+//Sending Messages
+function sendMessage(userId, email, callback) {
     
-    labels.forEach(function(label){
-        
-        var userSpace = {};
-        userSpace.label = label;
-        //userSpace.threads = getThreads(label);
-    });
+    var request = gapi.client.gmail.users.messages.get({
+    'userId': "me",
+    'id': "14a3724a7acff96a"
+  });
+  request.execute(function(response){
+    console.log(response);
+  });
+    
+    
+  /*var base64EncodedEmail = btoa(email);
+  var request = gapi.client.gmail.users.messages.send({
+    'userId': userId,
+    'message': {
+      'raw': base64EncodedEmail
+    }
+  });
+  console.log(base64EncodedEmail);
+  request.execute(callback);*/
 }
+
+

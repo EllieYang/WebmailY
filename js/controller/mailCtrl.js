@@ -1,6 +1,5 @@
 webmaily.controller("mailController",function($scope){
     
-    $scope.labelId = "Label_2";
     $scope.labels = [];
     $scope.allThreads = [];
     $scope.userSpaces=[];
@@ -10,32 +9,29 @@ webmaily.controller("mailController",function($scope){
     });
     
     $scope.$watchCollection('labels', function (newVal, oldVal) {
-        if (newVal) {
-            showLabels($scope.labels);
-        }
-    });
-    $scope.$watchCollection('allThreads', function (newVal, oldVal) {
-        if (newVal) {
-            $scope.labels.forEach(function(label){
-                //getThreads(label,$scope.allThreads);
+        if (newVal.length) {
+            newVal.forEach(function(label){
                 var userSpace = {};
                 userSpace.label = label;
-                
-                
-                    $scope.allThreads.forEach(function(thread){
-                        threadsFetcher.fetch(label,thread);
-                    });
-                    userSpace.threads = threadsFetcher.threadArray;
-                    $scope.userSpaces.push(userSpace);
-                 
-                safeApply($scope,function(){});
+                userSpace.threads = [];
+                $scope.userSpaces.push(userSpace);
+            });
+            getAllThreads($scope.labels);
+            safeApply($scope,function(){
             });
         }
-        
     });
-    //$scope.googleApi = jQuery.data($(document),'googleApi');
-    function safeApply(scope, fn) {
+   function safeApply(scope, fn) {
         (scope.$$phase || scope.$root.$$phase) ? fn() : scope.$apply(fn);
     }
     
+    $scope.composeMsg = function() {
+        $("#compose").show();
+    };
+    $scope.sendMsg = function(){
+        sendMessage("me", "This is an email", function(){
+            $("#compose").hide();
+        });
+          
+    };
 });

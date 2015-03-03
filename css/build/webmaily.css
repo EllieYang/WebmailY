@@ -3,9 +3,6 @@ body#webmail{
     text-align:left;
     font-family: "Myriad Pro", Myriad;
 }
-#content div#logInfo{
-    text-align:right;
-}
 #content span.labelDiv{
     border:1px solid #666;
     margin:0;
@@ -43,14 +40,23 @@ body#webmail{
     margin:0;
 }
 .userSpace{
-    width:300px;
-    height:300px;
     border:1px solid #cccccc;
     padding:2%;
     margin:2%;
 }
+.useSpace:after{
+    clear:both;
+}
 .userSpaceThread{
-    width:70%;
-    height:70%;
-    background:red;
+    background:rgba(255,0,0,0.1);
+}
+#compose{
+    display:none;
+    position:fixed;
+    bottom:0;
+    right:0;
+    width:500px;
+    height:400px;
+    border:1px solid #ccc;
+    background:#fff;
 }
