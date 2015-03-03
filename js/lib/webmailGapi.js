@@ -116,26 +116,8 @@ function getAllThreads(labels){
 }
 
 //Sending Messages
-function sendMessage(userId, email, callback) {
+function sendMessage() {
     
-    var request = gapi.client.gmail.users.messages.get({
-    'userId': "me",
-    'id': "14a3724a7acff96a"
-  });
-  request.execute(function(response){
-    console.log(response);
-  });
-    
-    
-  /*var base64EncodedEmail = btoa(email);
-  var request = gapi.client.gmail.users.messages.send({
-    'userId': userId,
-    'message': {
-      'raw': base64EncodedEmail
-    }
-  });
-  console.log(base64EncodedEmail);
-  request.execute(callback);*/
 }
 
 

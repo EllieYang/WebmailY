@@ -29,9 +29,7 @@ webmaily.controller("mailController",function($scope){
         $("#compose").show();
     };
     $scope.sendMsg = function(){
-        sendMessage("me", "This is an email", function(){
-            $("#compose").hide();
-        });
-          
+        sendMessage();
+        $("#compose").hide();    
     };
 });
