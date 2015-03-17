@@ -118,6 +118,19 @@ function getAllThreads(labels){
 //Sending Messages
 function sendMessage() {
     
+    $.get("http://0.0.0.0:9001/out.txt", function(data, status){
+       //var emailStr = data.replace(/\+/g, '-').replace(/\//g, '_');
+       var base64EncodedEmail = btoa(data).replace(/\+/g, '-').replace(/\//g, '_');
+        var request = gapi.client.gmail.users.messages.send({
+            'userId': 'me',
+            'resource': {//Here should be resource not message!!!!!!!
+            'raw': base64EncodedEmail
+        }
+  });
+  request.execute(function(){
+    console.log("successful!");
+  });
+    });
 }
 
 

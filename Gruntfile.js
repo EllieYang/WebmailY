@@ -29,7 +29,27 @@ module.exports = function(grunt) {
                 options:{
                     port:9001,
                     base: '.',
-                    keepalive:true
+                    keepalive:true,
+                    onCreateServer:function(server,connect,options){
+                        var MailComposer = require("mailcomposer").MailComposer;
+                        var mailcomposer = new MailComposer(),
+                            fs = require("fs");
+                       mailcomposer.setMessageOption({
+                        from: "welcome.easymail@gmail.com",
+                        to: "welcome.easymail@gmail.com",
+                        body: "Hello Xi+",
+                        html: "<b>Hello Xi+</b>" 
+                    });
+
+                        /*var emailStr = "";
+                        var err = "Error Occured";
+                        mailcomposer.buildMessage(function(err, emailStr){
+                            console.log(err || emailStr);
+                        });*/
+                        var Buffer = require("buffer");
+                        mailcomposer.streamMessage();
+                        mailcomposer.pipe(fs.createWriteStream("out.txt"));
+                    }
                 }
             }
         },
@@ -90,7 +110,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-coffee');
-    grunt.loadNpmTasks('grunt-base64');
 
     // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
     grunt.registerTask('default', ['coffee','concat']);
