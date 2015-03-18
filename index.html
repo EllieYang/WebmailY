@@ -11,10 +11,12 @@
       <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
       <script src="https://apis.google.com/js/client.js"></script>
-      <script src="js/lib/webmailGapi.js"></script>
+      <!--<script src="js/lib/bundle.js"></script>
+      <script src="js/lib/webmailGapi.js"></script>-->
+      <script data-main = "js/lib/webmailGapi.js" src="js/lib/require.js"></script>
       <script src="js/module/webmailAngular.js"></script>
       <script src="js/controller/mailCtrl.js"></script>
-      
+    
       <div id="controllerTag">
           <div data-ng-include="'template/menu.html'"></div>
           <div data-ng-include="'template/compose.html'"></div>

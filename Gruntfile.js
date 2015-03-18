@@ -10,25 +10,26 @@ module.exports = function(grunt) {
                     base: '.',
                     keepalive:true,
                     onCreateServer:function(server,connect,options){
-                        var MailComposer = require("mailcomposer").MailComposer;
+                        /*var MailComposer = require("mailcomposer").MailComposer;
                         var mailcomposer = new MailComposer(),
                             fs = require("fs");
-                       mailcomposer.setMessageOption({
+*/                       /*mailcomposer.setMessageOption({
                         from: "welcome.easymail@gmail.com",
                         to: "welcome.easymail@gmail.com",
                         body: "Hello Xi+",
                         html: "<b>Hello Xi+</b>" 
-                    });
+                    });*/
 
                         /*var emailStr = "";
                         var err = "Error Occured";
                         mailcomposer.buildMessage(function(err, emailStr){
                             console.log(err || emailStr);
                         });*/
-                        var Buffer = require("buffer");
-                        mailcomposer.streamMessage();
-                        mailcomposer.pipe(fs.createWriteStream("out.txt"));
+                        //var Buffer = require("buffer");
+                        /*mailcomposer.streamMessage();
+                        mailcomposer.pipe(fs.createWriteStream("out.txt"));*/
                     }
+                    
                 }
             }
         },

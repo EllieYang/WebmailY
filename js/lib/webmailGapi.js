@@ -1,5 +1,5 @@
-  
-  //Setting up Google Authorization
+
+//Setting up Google Authorization
   var clientId = '130554426228-5n2t4fcm2k9g977mvodfh9vo9591u69t.apps.googleusercontent.com';
   var apiKey = 'AIzaSyCeE7WUuVzyOQUlQuRuSZ5O_h_cw4MLn2k';
   var scopes = 'https://www.googleapis.com/auth/gmail.readonly';
@@ -118,19 +118,30 @@ function getAllThreads(labels){
 //Sending Messages
 function sendMessage() {
     
-    $.get("http://0.0.0.0:9001/out.txt", function(data, status){
-       //var emailStr = data.replace(/\+/g, '-').replace(/\//g, '_');
-       var base64EncodedEmail = btoa(data).replace(/\+/g, '-').replace(/\//g, '_');
+    require(["js/lib/bundle.js"],function(boop){
+        var mailcomposer = boop();
+        mailcomposer.setMessageOption({
+            from: "welcome.easymail@gmail.com",
+            to: "welcome.easymail@gmail.com",
+            body: "Hello Xi",
+            html: "<b>Hello Xi+</b><i>From the Easymail Team</i>" 
+        });
+        mailcomposer.buildMessage(function(err, emailStr){
+        //console.log(err || emailStr);
+        var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
+        console.log(base64EncodedEmail);
         var request = gapi.client.gmail.users.messages.send({
             'userId': 'me',
             'resource': {//Here should be resource not message!!!!!!!
             'raw': base64EncodedEmail
-        }
-  });
-  request.execute(function(){
-    console.log("successful!");
-  });
-    });
+            }
+        });
+        request.execute(function(status){
+            console.log("Email sent!");
+        });
+    }); 
+        
+});
 }
 
 
