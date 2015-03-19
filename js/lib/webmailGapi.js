@@ -54,8 +54,14 @@
             logInfo.innerHTML = 'Welcome, '+resp.emailAddress+'<br/>';
         });
         
+        var spaces = [{"id":"space_1", "name":"Thesis"},
+                     {"id":"space_2", "name":"Conference"}, 
+                     {"id":"space_3","name":"Something Fun"}
+                    ];
+        change("spaces",spaces);
+          
         //Get labels
-        var userLabelReq = gapi.client.gmail.users.labels.list({
+        /*var userLabelReq = gapi.client.gmail.users.labels.list({
             'userId':'me'
         }); 
           
@@ -67,12 +73,12 @@
                 }
             });
             change("labels",labels);
-            getAllThreads();
-        });
+        });*/    
   });
+      
 }
 
-function getAllThreads(labels){
+/*function getAllThreads(labels){
     
     var scope = angular.element($("#controllerTag")).scope();
     var req1 = gapi.client.gmail.users.threads.list({
@@ -86,7 +92,7 @@ function getAllThreads(labels){
                 threadResp.execute(function(response){
                     var content = response.result;
                     var lastMsg = content.messages[(content.messages.length-1)];
-                    
+                    console.log(lastMsg);
                     if(lastMsg.labelIds && lastMsg.labelIds[lastMsg.labelIds.length-1] == label.id){
 
                         var pushedThread = {"thread":thread};
@@ -112,6 +118,48 @@ function getAllThreads(labels){
             });
             });
         }    
+    })
+}*/
+
+function getAllThreads1(spaces){
+    
+    var scope = angular.element($("#controllerTag")).scope();
+    var req1 = gapi.client.gmail.users.threads.list({
+        'userId':'me'
+     });
+    req1.execute(function(resp){
+    
+        spaces.forEach(function(space,index){
+            resp.result.threads.forEach(function(thread){
+            var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
+            threadResp.execute(function(response){
+                var content = response.result;
+                var lastMsg = content.messages[(content.messages.length-1)];
+                if(lastMsg.payload){
+                    lastMsg.payload.headers.forEach(function(header){
+                        if((header.name == "Email-To-Space") && header.value == space.id){
+                            console.log(lastMsg);
+                            var pushedThread = {"thread":thread};
+                            pushedThread.lastMsg = {"msg":lastMsg,"header":{},"snippet":''};
+                            pushedThread.lastMsg.snippet = lastMsg.snippet ? lastMsg.snippet : 'This message has no content';
+                            lastMsg.payload.headers.forEach(function(header){
+                            if(header.name == "Subject"){
+                                pushedThread.lastMsg.header.subject = header.value;
+                            }else if(header.name == "From"){
+                                pushedThread.lastMsg.header.sender = header.value;
+                            }
+                            });
+                            scope.$apply(function(){
+                                scope["userSpaces"][index]["threads"].push(pushedThread);
+                            });
+                        }
+                    });
+                    
+                }
+            });
+        });
+        });
+            
     })
 }
 
@@ -152,6 +200,7 @@ function sendMessage(emailMsg) {
             body: emailMsg["body"]
             //,html: "<b>"+emailMsg["body"]+"</b>"+"<i>From the Easymail Team</i>" 
         });
+        mailcomposer.addHeader("email-to-space",emailMsg["space"]);
         mailcomposer.buildMessage(function(err, emailStr){
         //console.log(err || emailStr);
         var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');

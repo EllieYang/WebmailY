@@ -3,8 +3,8 @@
     <div id="labelContainer">
         <p>Your spaces:</p>
         <div data-ng-repeat="userSpace in userSpaces" class="userSpace">
-            Space:{{userSpace.label.id}}<br>
-            Space name: {{userSpace.label.name}}<br>
+            Space:{{userSpace.space.id}}<br>
+            Space name: {{userSpace.space.name}}<br>
             <div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread">
                 Sender: {{thread.lastMsg.header.sender}}<br>
                 Subject: {{thread.lastMsg.header.subject}}<br>
