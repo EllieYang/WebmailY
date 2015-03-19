@@ -1,9 +1,13 @@
 <div id="compose">
-    <form>
-        To:<br><input type="email" ><br>
-        Subject:<br><input type="text" ><br>
-        Space:<br><input type="text" ><br>
-        Content:<br><input type="text"><br>
+    <form novalidate>
+        To:<br><input type="email" ng-model="email.to"><br>
+        Subject:<br><input type="text" ng-model="email.subject"><br>
+        Space:
+        <div data-ng-repeat="space in spaces">
+            <input type="radio" ng-model="email.space" ng-value="space.id">{{space.name}}</input>
+        </div>
+        Space:<br><input type="text" ng-model="email.space"><br>
+        Content:<br><textarea ng-model="email.body"></textarea><br>
         <br><br>
     <button ng-click="sendMsg()">SEND</button>
     </form>

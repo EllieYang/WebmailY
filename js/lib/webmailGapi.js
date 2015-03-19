@@ -116,9 +116,9 @@ function getAllThreads(labels){
 }
 
 //Sending Messages
-function sendMessage() {
+function sendMessage(emailMsg) {
     
-    require(["js/lib/bundle.js"],function(boop){
+    /*require(["js/lib/bundle.js"],function(boop){
         var mailcomposer = boop();
         mailcomposer.setMessageOption({
             from: "welcome.easymail@gmail.com",
@@ -130,6 +130,31 @@ function sendMessage() {
         //console.log(err || emailStr);
         var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
         console.log(base64EncodedEmail);
+        var request = gapi.client.gmail.users.messages.send({
+            'userId': 'me',
+            'resource': {//Here should be resource not message!!!!!!!
+            'raw': base64EncodedEmail
+            }
+        });
+        request.execute(function(status){
+            console.log("Email sent!");
+        });
+    }); 
+        
+});*/
+    
+    require(["js/lib/bundle.js"],function(boop){
+        var mailcomposer = boop();
+        mailcomposer.setMessageOption({
+            from: emailMsg["from"],
+            to: emailMsg["to"],
+            subject: emailMsg["subject"],
+            body: emailMsg["body"]
+            //,html: "<b>"+emailMsg["body"]+"</b>"+"<i>From the Easymail Team</i>" 
+        });
+        mailcomposer.buildMessage(function(err, emailStr){
+        //console.log(err || emailStr);
+        var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
         var request = gapi.client.gmail.users.messages.send({
             'userId': 'me',
             'resource': {//Here should be resource not message!!!!!!!
