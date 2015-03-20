@@ -11,9 +11,9 @@ webmaily.controller("mailController",function($scope){
     $scope.email={};
     $scope.email.from = "welcome.easymail@gmail.com";
     $scope.email.to = "welcome.easymail@gmail.com";
-    $scope.email.subject = "Thesis";
+    $scope.email.subject = "New Message";
     $scope.email.space = "space_1";
-    $scope.email.body = "This is a greeting from Easymail Team";
+    $scope.email.body = "Type to write the email body";
     
     
     angular.element(window).bind('load', function() {
@@ -42,11 +42,16 @@ webmaily.controller("mailController",function($scope){
                 userSpace.threads = [];
                 $scope.userSpaces.push(userSpace);
             });
-            getAllThreads1($scope.spaces);
-            safeApply($scope,function(){
-            });
+            /*setInterval(function(){
+                console.log("refresh");     
+            }, 3000);*/
+           getAllThreads1($scope.spaces);
+           safeApply($scope,function(){});
         }
     });
+    
+    
+    
    function safeApply(scope, fn) {
         (scope.$$phase || scope.$root.$$phase) ? fn() : scope.$apply(fn);
     }
@@ -58,4 +63,17 @@ webmaily.controller("mailController",function($scope){
         sendMessage($scope.email);
         $("#compose").hide();   
     };
+    $scope.close = function(){
+        $("#compose").hide();   
+    };
+    $scope.threadClicked = function(spaceId, index,lastMsg){
+        
+        $("#emailBody_"+spaceId+"_"+index).toggle("fast");
+        if($("#emailThread_"+spaceId+"_"+index).hasClass("unreadThread")){
+            $("#emailThread_"+spaceId+"_"+index).removeClass("unreadThread");
+            console.log(lastMsg);
+            markAsRead(lastMsg);
+        }
+        $("#emailThread_"+spaceId+"_"+index).toggleClass("activeThread");
+    }
 });

@@ -51,7 +51,7 @@
           
         userProfileReq.execute(function(resp){
             var logInfo = document.getElementById('logInfo');
-            logInfo.innerHTML = 'Welcome, '+resp.emailAddress+'<br/>';
+            logInfo.innerHTML = resp.emailAddress+'<br/>';
         });
         
         var spaces = [{"id":"space_1", "name":"Thesis"},
@@ -142,11 +142,25 @@ function getAllThreads1(spaces){
                             var pushedThread = {"thread":thread};
                             pushedThread.lastMsg = {"msg":lastMsg,"header":{},"snippet":''};
                             pushedThread.lastMsg.snippet = lastMsg.snippet ? lastMsg.snippet : 'This message has no content';
+                            
+                            if(lastMsg.labelIds.indexOf("UNREAD") !== -1){
+                                pushedThread.lastMsg.messageStatus = "UNREAD";
+                            }else{
+                                pushedThread.lastMsg.messageStatus = "READ";
+                            }
+                            
+                            //Retrieve the message body
+                            if(lastMsg.payload.body){
+                                pushedThread.lastMsg.body = atob(lastMsg.payload.body.data);
+                            }
+                            
                             lastMsg.payload.headers.forEach(function(header){
                             if(header.name == "Subject"){
                                 pushedThread.lastMsg.header.subject = header.value;
                             }else if(header.name == "From"){
                                 pushedThread.lastMsg.header.sender = header.value;
+                            }else if (header.name == "Date"){
+                                pushedThread.lastMsg.header.date = header.value.split(" ",3).join(" ");
                             }
                             });
                             scope.$apply(function(){
@@ -211,11 +225,26 @@ function sendMessage(emailMsg) {
             }
         });
         request.execute(function(status){
-            console.log("Email sent!");
+            alert("Email sent!");
         });
     }); 
         
 });
+}
+
+//Function Mark the message as read
+function markAsRead(message){
+    message.messageStatus = "READ";
+    if(message.msg.labelIds.indexOf("UNREAD")!==-1){
+        var request = gapi.client.gmail.users.messages.modify({
+            'userId': 'me',
+            'id':message.msg.id,
+            'removeLabelIds': ['UNREAD']
+        });
+        request.execute(function(status){
+            console.log("marked as read");
+        });
+    }
 }
 
 

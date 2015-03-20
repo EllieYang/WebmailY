@@ -2,6 +2,10 @@ body#webmail{
     color:#333;
     text-align:left;
     font-family: "Myriad Pro", Myriad;
+    font-size:14px;
+}
+#logInfo{
+    text-align:right;
 }
 #content span.labelDiv{
     border:1px solid #666;
@@ -48,7 +52,14 @@ body#webmail{
     clear:both;
 }
 .userSpaceThread{
-    background:rgba(255,0,0,0.1);
+    padding-top:5px;
+    padding-bottom:5px;
+    border-bottom:1px solid #ccc;
+    font-weight:100;
+    cursor:pointer;
+}
+.spaceName{
+    color:#ff9977;
 }
 #compose{
     display:none;
@@ -59,5 +70,100 @@ body#webmail{
     height:400px;
     border:1px solid #ccc;
     background:#fff;
-    padding:10px;
+    padding:30px;
+    padding-top:70px;
+    padding-bottom:70px;
+}
+#compose .composeHeader{
+    height:50px;
+    line-height:50px;
+    padding-left:30px;
+    background:#333;
+    color:#fff;
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+}
+#compose .formLabel{
+    display:inline-block;
+    width:70px;
+}
+#compose input[type="text"]{
+    width:70%;
+    height:20px;
+}
+#compose input[type="email"]{
+    width:70%;
+    height:20px;
+}
+#compose .spaceList{
+    margin-right:30px;
+}
+#compose textarea{
+    width:70%;
+    height:200px;
+}
+#senderSpan{
+    display:inline-block;
+    width:300px;
+}
+#snippetSpan{
+    color:#999999;  
+}
+#dateSpan{
+   float:right;
+}
+.unreadThread #senderSpan{
+    font-weight:700;
+}
+.unreadThread #subjectSpan{
+    font-weight:700;
+}
+.unreadThread #dateSpan{
+    font-weight:700;
+}
+.activeThread {
+    background:rgba(240,240,240,0.2);
+}
+.emailBody{
+    display:none;
+    padding-top:20px;
+    padding-bottom:20px;
+}
+#compose .composeFooter{
+    height:40px;
+    border-top:1px solid #ccc;
+    background:#eee;
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    padding-left:30px;
+}
+#sendBtn{
+    height:30px;
+    background:#3399ff;
+    border:1px solid #ccc;
+    color:#fff;
+    border-radius:2px;
+    margin-top:5px;
+    cursor:pointer;
+}
+#closeBtn{
+    border:none;
+    background:#333;
+    color:#fff;
+    position:absolute;right:30px;
+    top:0;
+    height:50px;
+    cursor:pointer;
+}
+#replyBtn{
+    border:none;
+    text-decoration:underline;
+    color:#3399ff;
+    cursor:pointer;
+    background:#fff;
+    padding:0;
 }

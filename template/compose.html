@@ -1,14 +1,22 @@
 <div id="compose">
+    <div class="composeHeader">
+        <span>{{email.subject}}</span>
+        <button ng-click="close()" id="closeBtn">&#x2613;</button>
+    </div>
     <form novalidate>
-        To:<br><input type="email" ng-model="email.to"><br>
-        Subject:<br><input type="text" ng-model="email.subject"><br>
-        Space:
-        <div data-ng-repeat="space in spaces">
-            <input type="radio" ng-model="email.space" ng-value="space.id">{{space.name}}</input>
-        </div>
-        Space:<br><input type="text" ng-model="email.space"><br>
-        Content:<br><textarea ng-model="email.body"></textarea><br>
+        <span class="formLabel">To:</span><input type="email" ng-model="email.to"><br><br>
+        
+        <span class="formLabel">Space:</span>
+        <span data-ng-repeat="space in spaces" class="spaceList">
+           <input type="radio" ng-model="email.space" ng-value="space.id">{{space.name}}</input>
+        </span>
         <br><br>
-    <button ng-click="sendMsg()">SEND</button>
+<!--    Space:<br><input type="text" ng-model="email.space"><br>-->
+    <span class="formLabel">Subject:</span><input type="text" ng-model="email.subject"><br><br>
+        <span class="formLabel"></span><textarea ng-model="email.body"></textarea><br>
+        <br><br>
+    <div class="composeFooter">
+        <button ng-click="sendMsg()" id="sendBtn">SEND</button>
+    </div>
     </form>
 </div>

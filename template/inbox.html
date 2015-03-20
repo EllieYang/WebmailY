@@ -1,18 +1,25 @@
 <div id="content">
     
     <div id="labelContainer">
-        <p>Your spaces:</p>
+        
         <div data-ng-repeat="userSpace in userSpaces" class="userSpace">
-            Space:{{userSpace.space.id}}<br>
-            Space name: {{userSpace.space.name}}<br>
-            <div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread">
-                Sender: {{thread.lastMsg.header.sender}}<br>
-                Subject: {{thread.lastMsg.header.subject}}<br>
-                Snippet: {{thread.lastMsg.msg.snippet}}<br>
+<!--            Space:{{userSpace.space.id}}<br>-->
+            <span class="spaceName">Space: {{userSpace.space.name}}</span><br><br>
+            <div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread" ng-class="thread.lastMsg.messageStatus == 'UNREAD' ? 'unreadThread' : ''" ng-click="threadClicked(userSpace.space.id,$index,thread.lastMsg)" id="{{'emailThread_'+userSpace.space.id+'_'+$index}}"> 
+<!--                MessageStatus: {{thread.lastMsg.messageStatus}}<br>-->
+                <span id="senderSpan">{{thread.lastMsg.header.sender}}</span>
+                <span id="subjectSpan">{{thread.lastMsg.header.subject}}</span>
+                <span id="snippetSpan">&nbsp;-&nbsp;{{thread.lastMsg.msg.snippet}}</span>
+                <span id="dateSpan">{{thread.lastMsg.header.date}}</span>
                 <br>
+                <div id="{{'emailBody_'+userSpace.space.id+'_'+$index}}" class="emailBody">
+                    {{thread.lastMsg.header.sender}}<br>
+                    to me<br><br>
+                    {{thread.lastMsg.body}}<br><br>
+                    <button id="replyBtn">reply</button>
+                </div>
             </div>
         </div>
     </div>
     <br/>
-    <hr>
 </div>
