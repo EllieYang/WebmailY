@@ -1,8 +1,34 @@
+
 <div id="content">
-    
-    <div id="labelContainer">
-        
-        <div data-ng-repeat="userSpace in userSpaces" class="userSpace">
+    <div id="labelContainer" class="pt-perspective row">
+        <div class="pt-page pt-page-1">
+            <div data-ng-repeat="userSpace in userSpaces track by $index" class="spaceInOverview col-md-3 userSpace_{{$index}}" data-pageNo={{$index+1}} ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4}">
+               <div class="userSpaceThread">
+                   <span class="spaceName">{{userSpace.space.name}}</span>
+                   <div class="row">
+                        <div data-ng-repeat="subSpace in userSpace.space.subSpace" class="col-md-4 subSpaceDivCon">
+                            <div class="subSpaceDiv">{{subSpace.name}}</div>
+                       </div>
+                   </div>
+               </div>
+                <button class="glyphicon glyphicon-trash deleteSpace"></button>
+            </div>
+            <div class="col-md-3 addNewSpace">
+                <div class="userSpaceThread">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" placeholder="Space Name" id="newSpaceName">
+                        <span class="input-group-addon" >New Space Name</span>
+                    </div>
+                    <div class="input-group">
+                        <textarea class="form-control custom-control" rows="3" style="resize:none" placeholder="Subspaces, separated by ;" id="newSubspaces" ></textarea>  
+                        <span class="input-group-addon btn" ng-click="addNewSpace()">Done</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+         
+        <div data-ng-repeat="userSpace in userSpaces track by $index" class="userSpace pt-page userSpace_{{$index}} pt-page-{{$index+2}}" ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4}">
+            <div class="spaceContainer">
 <!--            Space:{{userSpace.space.id}}<br>-->
             <span class="spaceName">Space: {{userSpace.space.name}}</span><br><br>
             <div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread" ng-class="thread.lastMsg.messageStatus == 'UNREAD' ? 'unreadThread' : ''" ng-click="threadClicked(userSpace.space.id,$index,thread.lastMsg)" id="{{'emailThread_'+userSpace.space.id+'_'+$index}}"> 
@@ -19,7 +45,9 @@
                     <button id="replyBtn">reply</button>
                 </div>
             </div>
+            </div>
         </div>
     </div>
-    <br/>
+    
 </div>
+

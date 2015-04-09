@@ -14,37 +14,44 @@ webmaily.controller("mailController",function($scope){
     $scope.email.subject = "New Message";
     $scope.email.space = "space_1";
     $scope.email.body = "Type to write the email body";
+    //$scope.newSpaceName = "Space Name";
     
+    $scope.addNewSpace = function(newSpaceName) {
+        var spaceNameVal = $("#newSpaceName").val();
+        var subspacesVal = $("#newSubspaces").val();
+        var subspacesList = subspacesVal.split(';');
+        var subspacesObjList =[];
+        subspacesList.forEach(function(element, index){
+            var newSub = new Space('space_'+index, element,[]);
+            subspacesObjList.push(newSub);
+        });
+        console.log(subspacesObjList);
+        var newspace = {"id":'space_'+($scope.spaces.length+1),"name":spaceNameVal,"subSpace":subspacesObjList};
+        //var newspace = new Space('space_'+($scope.spaces.length+1),newSpaceName,[]);
+        var currentuser = JSON.parse(localStorage.getItem("welcome.easymail"));
+        currentuser.space.push(newspace);
+        localStorage.setItem("welcome.easymail",JSON.stringify(currentuser));
+        $scope.spaces = currentuser.space;
+        setTimeout(function(){   
+            PageTransitions();
+        },3000);
+        //$scope.newSpaceName = 'Space Name';
+        safeApply($scope,function(){});  
+    };
     
     angular.element(window).bind('load', function() {
         handleClientLoad();
     });
     
-    /*$scope.$watchCollection('labels', function (newVal, oldVal) {
-        if (newVal.length) {
-            newVal.forEach(function(label){
-                var userSpace = {};
-                userSpace.label = label;
-                userSpace.threads = [];
-                $scope.userSpaces.push(userSpace);
-            });
-            //getAllThreads($scope.labels);
-            getAllThreads1($scope.spaces);
-            safeApply($scope,function(){
-            });
-        }
-    });*/
     $scope.$watchCollection('spaces', function (newVal, oldVal) {
         if (newVal.length) {
+           $scope.userSpaces = [];
             newVal.forEach(function(space){
                 var userSpace = {};
                 userSpace.space = space;
                 userSpace.threads = [];
                 $scope.userSpaces.push(userSpace);
             });
-            /*setInterval(function(){
-                console.log("refresh");     
-            }, 3000);*/
            getAllThreads1($scope.spaces);
            safeApply($scope,function(){});
         }
@@ -76,4 +83,11 @@ webmaily.controller("mailController",function($scope){
         }
         $("#emailThread_"+spaceId+"_"+index).toggleClass("activeThread");
     }
+    
+    function assignColor(obj){
+        var colors = ['#ff0000', '#00ff00', '#0000ff']; 
+        var random_color = colors[Math.floor(Math.random() * colors.length)];
+        obj.css('background-color', random_color);
+    }
+
 });

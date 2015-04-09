@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html ng-app="webmaily">
   <head>
+      <!-- Latest compiled and minified CSS -->
+      <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+      <!-- Optional theme -->
+      <link rel="stylesheet" href="css/bootstrap/bootstrap-theme.min.css">
+      <link rel="stylesheet" type="text/css" href="css/default.css" />
+      <link rel="stylesheet" type="text/css" href="css/multilevelmenu.css" />
+      <link rel="stylesheet" type="text/css" href="css/component.css" />
+      <link rel="stylesheet" type="text/css" href="css/animations.css" />
       <link type="text/css" rel="stylesheet" href="css/webmaily.css">
-      <title>http://0.0.0.0:91</title>
   </head> 
   <body id="webmail" data-ng-controller= "mailController">
       <button id="authorize-button" style="visibility: hidden">Sign in through Google</button>
@@ -16,11 +23,21 @@
       <script data-main = "js/lib/webmailGapi.js" src="js/lib/require.js"></script>
       <script src="js/module/webmailAngular.js"></script>
       <script src="js/controller/mailCtrl.js"></script>
-    
+      
+      <!-- Latest compiled and minified JavaScript -->
+      <script src="js/bootstrap/bootstrap.min.js"></script>
+      <script src="js/animation/modernizr.custom.js"></script>
+      <title>http://0.0.0.0:91</title>
       <div id="controllerTag">
           <div data-ng-include="'template/menu.html'"></div>
           <div data-ng-include="'template/compose.html'"></div>
           <div data-ng-include="'template/inbox.html'"></div>
       </div>
+      
+<!--      <script src="js/animation/jquery.dlmenu.js"></script>-->
+<!--      <script src="js/animation/pagetransitions.js"></script>-->
+      <script src="js/animation/jquery.dlmenu.js"></script>
+      <script src="js/animation/pagetransitions.js"></script>
+      <script src="js/lib/JQueryEvents.js"></script>
   </body>
 </html>

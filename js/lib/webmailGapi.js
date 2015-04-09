@@ -54,11 +54,18 @@
             logInfo.innerHTML = resp.emailAddress+'<br/>';
         });
         
-        var spaces = [{"id":"space_1", "name":"Thesis"},
-                     {"id":"space_2", "name":"Conference"}, 
-                     {"id":"space_3","name":"Something Fun"}
-                    ];
-        change("spaces",spaces);
+        /*var spaces = [{"id":"space_1", "name":"Thesis", "subSpaces":[]},
+                     {"id":"space_2", "name":"Conference", "subSpaces":[]}, 
+                     {"id":"space_3","name":"Something Fun", "subSpaces":[]}
+                    ];*/
+        require(["js/lib/users.js"],function(getUser){
+            //var user1 = getUser();
+            //console.log(user1.space);
+            //localStorage.setItem("welcome.easymail", JSON.stringify(user1));
+            var user1 = JSON.parse(localStorage.getItem("welcome.easymail"));
+            change("spaces",user1.space);
+        });
+        //change("spaces",spaces);
           
         //Get labels
         /*var userLabelReq = gapi.client.gmail.users.labels.list({
@@ -128,8 +135,9 @@ function getAllThreads1(spaces){
         'userId':'me'
      });
     req1.execute(function(resp){
-    
+       
         spaces.forEach(function(space,index){
+            
             resp.result.threads.forEach(function(thread){
             var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
             threadResp.execute(function(response){
@@ -137,8 +145,9 @@ function getAllThreads1(spaces){
                 var lastMsg = content.messages[(content.messages.length-1)];
                 if(lastMsg.payload){
                     lastMsg.payload.headers.forEach(function(header){
+                        
                         if((header.name == "Email-To-Space") && header.value == space.id){
-                            console.log(lastMsg);
+                            //console.log(lastMsg);
                             var pushedThread = {"thread":thread};
                             pushedThread.lastMsg = {"msg":lastMsg,"header":{},"snippet":''};
                             pushedThread.lastMsg.snippet = lastMsg.snippet ? lastMsg.snippet : 'This message has no content';
