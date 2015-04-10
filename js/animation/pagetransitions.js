@@ -57,10 +57,10 @@ var PageTransitions = function() {
             //nextPage($(this).data('animation'));
             gotoPage(0,$(this).data('animation'));
 		} );
-        /*$(".spaceInOverview").on( 'click', function() {
+        $(".spaceInOverview").on( 'click', function() {
             var animation=9;
             gotoPage($(this).data('pageno'),animation);
-		} );*/
+		} );
         $(".spaceInOverview").hover(function() {
             $(this).children(".deleteSpace").fadeIn();
 		},function(){

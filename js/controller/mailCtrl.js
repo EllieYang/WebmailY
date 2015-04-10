@@ -11,6 +11,7 @@ webmaily.controller("mailController",function($scope){
     $scope.email.space = "space_1";
     $scope.email.body = "Type to write the email body";
     $scope.activeSpaceIndex = -1;
+    $scope.activeSpace = {};
     
     $scope.addNewSpace = function(newSpaceName) {
         var spaceNameVal = $("#newSpaceName").val();
@@ -62,6 +63,9 @@ webmaily.controller("mailController",function($scope){
     
     $scope.composeMsg = function() {
         $("#compose").show();
+        $scope.activeSpaceIndex = $("#activeSpaceIndex").val();
+        $scope.activeSpace = $scope.spaces[$scope.activeSpaceIndex];
+        safeApply($scope,function(){});
         console.log($("#activeSpaceIndex").val());
     };
     $scope.sendMsg = function(){
