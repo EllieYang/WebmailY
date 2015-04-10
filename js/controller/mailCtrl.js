@@ -3,10 +3,6 @@ webmaily.controller("mailController",function($scope){
     $scope.labels = [];
     $scope.allThreads = [];
     $scope.userSpaces=[];
-    /*$scope.spaces = [{"id":"space_1", "name":"Thesis"},
-                     {"id":"space_2", "name":"Conference"}, 
-                     {"id":"space_3","name":"Something Fun"}
-                    ];*/
     $scope.spaces = [];
     $scope.email={};
     $scope.email.from = "welcome.easymail@gmail.com";
@@ -14,7 +10,7 @@ webmaily.controller("mailController",function($scope){
     $scope.email.subject = "New Message";
     $scope.email.space = "space_1";
     $scope.email.body = "Type to write the email body";
-    //$scope.newSpaceName = "Space Name";
+    $scope.activeSpaceIndex = -1;
     
     $scope.addNewSpace = function(newSpaceName) {
         var spaceNameVal = $("#newSpaceName").val();
@@ -35,7 +31,6 @@ webmaily.controller("mailController",function($scope){
         setTimeout(function(){   
             PageTransitions();
         },3000);
-        //$scope.newSpaceName = 'Space Name';
         safeApply($scope,function(){});  
     };
     
@@ -57,7 +52,9 @@ webmaily.controller("mailController",function($scope){
         }
     });
     
-    
+    $scope.$watch('activeSpaceIndex', function(){
+        console.log("changed from controller");
+    }, true);
     
    function safeApply(scope, fn) {
         (scope.$$phase || scope.$root.$$phase) ? fn() : scope.$apply(fn);
@@ -65,6 +62,7 @@ webmaily.controller("mailController",function($scope){
     
     $scope.composeMsg = function() {
         $("#compose").show();
+        console.log($("#activeSpaceIndex").val());
     };
     $scope.sendMsg = function(){
         sendMessage($scope.email);
