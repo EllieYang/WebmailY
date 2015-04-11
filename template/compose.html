@@ -11,7 +11,7 @@
         </span>
         <br><br>
         <span class="formLabel">Space (S2):</span>
-        <span>{{activeSpace.name}}&nbsp;&nbsp;</span><input type="checkbox">Send Space Fairy</input>
+        <span>{{activeSpace.name}}&nbsp;&nbsp;</span><input type="checkbox" ng-model="fairySelected" ng-change="updateFairySelected(fairySelected)">Send Space Fairy{{fairySelected}}</input>
         <br><br>
         <!--    Space:<br><input type="text" ng-model="email.space"><br>-->
         <span class="formLabel">Subject:</span><input type="text" ng-model="email.subject"><br><br>

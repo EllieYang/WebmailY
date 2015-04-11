@@ -1,0 +1,49 @@
+[
+    {
+        "email":"welcome.easymail@gmail.com",
+        "name":"Easy Mail",
+        "space": [
+                    {
+                        "id":"space_request",
+                        "name":"NewSpaceName",
+                        "subSpace":[]
+                    },
+                    {
+                        "id":"space_0",
+                        "name":"Thesis",
+                        "subSpace":[]
+                    },
+                    {
+                        "id":"space_1",
+                        "name":"Conference",
+                        "subSpace":[]
+                    },
+                    {
+                        "id":"space_2",
+                        "name":"Something Fun",
+                        "subSpace":[]
+                    },
+                    {
+                        "id":"space_3",
+                        "name":"TOCHI Submission",
+                        "subSpace":[
+                                        {
+                                            "id":"space_3_0",
+                                            "name":"paper",
+                                            "subSpace":[]
+                                        },
+                                        {
+                                            "id":"space_3_1",
+                                            "name":"Video Materials",
+                                            "subSpace":[]
+                                        },
+                                        {
+                                            "id":"space_3_2",
+                                            "name":"User Study",
+                                            "subSpace":[]
+                                        }
+                                    ]
+                    }
+                 ]
+    }
+]

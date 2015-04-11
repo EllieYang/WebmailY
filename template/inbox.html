@@ -1,9 +1,12 @@
 
 <div id="content">
     <input type="number" id="activeSpaceIndex"  ng-model="activeSpaceIndex" class="ng-hide"/>
+    
+    
     <div id="labelContainer" class="pt-perspective row">
         <div class="pt-page pt-page-1">
-            <div space-overview data-ng-repeat="userSpace in userSpaces track by $index" class="spaceInOverview col-md-3 userSpace_{{$index}}" data-pageNo={{$index+1}} ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4}">
+            <div space-overview data-ng-repeat="userSpace in userSpaces track by $index" class="spaceInOverview col-md-3 userSpace_{{$index}}" data-pageNo={{$index+1}} ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}">
+               
                <div class="userSpaceThread">
                    <span class="spaceName">{{userSpace.space.name}}</span>
                    <div class="row">
@@ -12,6 +15,7 @@
                        </div>
                    </div>
                </div>
+               <button ng-click="createNewSpace(userSpace.space);$event.stopPropagation();" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">New Space</button>&nbsp;&nbsp;<button ng-click="" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Map Space</button>
                 <button class="glyphicon glyphicon-trash deleteSpace"></button>
             </div>
             <div class="col-md-3 addNewSpace">
