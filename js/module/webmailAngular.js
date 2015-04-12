@@ -15,12 +15,11 @@ webmaily.directive('spaceOverview', function() {
 });
 
 webmaily.factory('GmailAPIService',function(){
-    
-    
+
     //Setting up Google Authorization
     var clientId = '130554426228-5n2t4fcm2k9g977mvodfh9vo9591u69t.apps.googleusercontent.com';
     var apiKey = 'AIzaSyCeE7WUuVzyOQUlQuRuSZ5O_h_cw4MLn2k';
-    var scopes = 'https://www.googleapis.com/auth/gmail.readonly';
+    var scopes = 'https://www.googleapis.com/auth/gmail.compose';
    
     // Use a button to handle authentication the first time.
     var handleClientLoad = function () {
@@ -58,8 +57,10 @@ webmaily.factory('GmailAPIService',function(){
                 'userId':'me'
             }); 
             userProfileReq.execute(function(resp){
-                var logInfo = document.getElementById('logInfo');
-                logInfo.innerHTML = resp.emailAddress+'<br/>';
+                //var logInfo = document.getElementById('logInfo');
+                //logInfo.innerHTML = resp.emailAddress+'<br/>';
+                $("#logInfo").val(resp.emailAddress);
+               
             });
         });
     }
@@ -134,7 +135,8 @@ webmaily.factory('GmailAPIService',function(){
     };
     
     //Sending Messages
-    function sendMessage(emailMsg,activeSpace,fairySelected) { 
+    var sendMessage = function (emailMsg,activeSpace,fairySelected) { 
+        
         require(["js/lib/bundle.js"],function(boop){
             var mailcomposer = boop();
             mailcomposer.setMessageOption({
@@ -168,7 +170,7 @@ webmaily.factory('GmailAPIService',function(){
         }); 
             
     });
-    }
+    };
     
     //Function Mark the message as read
     function markAsRead(message){
@@ -187,7 +189,8 @@ webmaily.factory('GmailAPIService',function(){
 
     return {
       getAllThreads1: getAllThreads1,
-      handleClientLoad:handleClientLoad
+      handleClientLoad:handleClientLoad,
+      sendMessage:sendMessage
     };
 }
 );

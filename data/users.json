@@ -34,7 +34,49 @@
                                         },
                                         {
                                             "id":"space_3_1",
-                                            "name":"Video Materials",
+                                            "name":"Video",
+                                            "subSpace":[]
+                                        },
+                                        {
+                                            "id":"space_3_2",
+                                            "name":"User Study",
+                                            "subSpace":[]
+                                        }
+                                    ]
+                    }
+                 ]
+    },
+    {
+        "email":"frank.taylor.testing@gmail.com",
+        "name":"Frank Taylor",
+        "space": [
+                    {
+                        "id":"space_0",
+                        "name":"Street Food",
+                        "subSpace":[]
+                    },
+                    {
+                        "id":"space_1",
+                        "name":"Paper Review",
+                        "subSpace":[]
+                    },
+                    {
+                        "id":"space_2",
+                        "name":"Travel Forever",
+                        "subSpace":[]
+                    },
+                    {
+                        "id":"space_3",
+                        "name":"TOCHI Submission",
+                        "subSpace":[
+                                        {
+                                            "id":"space_3_0",
+                                            "name":"paper",
+                                            "subSpace":[]
+                                        },
+                                        {
+                                            "id":"space_3_1",
+                                            "name":"Video",
                                             "subSpace":[]
                                         },
                                         {

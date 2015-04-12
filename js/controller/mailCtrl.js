@@ -5,7 +5,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
     $scope.userSpaces=[];
     $scope.spaces = [];
     $scope.email={};
-    $scope.email.from = "welcome.easymail@gmail.com";
+    $scope.email.from = "me";
     $scope.email.to = "welcome.easymail@gmail.com";
     $scope.email.subject = "New Message";
     $scope.email.space = "space_1";
@@ -14,18 +14,17 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
     $scope.activeSpace = {};
     $scope.fairySelected = false;
     $scope.fairyRequest = false;
+    $scope.activeUser = "me";
     
     angular.element(window).bind('load', function() {
         //handleClientLoad();
         GmailAPIService.handleClientLoad();
         $http.get('data/users.json').success(function(data){ 
             $scope.userSpaces = [];
-            console.log(data);
             data[0].space.forEach(function(space){
                 var userSpace = {};
                 userSpace.space = space;
                 userSpace.threads = [];
-                console.log();
                 if(space.id=='space_request'){
                     userSpace.type="request";
                 }else{
@@ -34,7 +33,13 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
                 $scope.userSpaces.push(userSpace);
             });
             $timeout(function(){
-                $scope.spaces = data[0].space;
+                $scope.activeUser = $("#logInfo").val();
+                data.forEach(function(userInfo){
+                    if(userInfo.email == $scope.activeUser){
+                        $scope.spaces = userInfo.space;
+                    }
+                });
+                //$scope.spaces = data[0].space;
             },3000);
         });
     });
@@ -45,16 +50,21 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
         var subspacesList = subspacesVal.split(';');
         var subspacesObjList =[];
         subspacesList.forEach(function(element, index){
-            var newSub = new Space('space_'+index, element,[]);
+            //var newSub = new Space('space_'+index, element,[]);
+            var newSub = {"id":'space_'+index,"name":element,"subSpace":[]};
             subspacesObjList.push(newSub);
         });
         console.log(subspacesObjList);
         var newspace = {"id":'space_'+($scope.spaces.length+1),"name":spaceNameVal,"subSpace":subspacesObjList};
         //var newspace = new Space('space_'+($scope.spaces.length+1),newSpaceName,[]);
-        var currentuser = JSON.parse(localStorage.getItem("welcome.easymail"));
-        currentuser.space.push(newspace);
-        localStorage.setItem("welcome.easymail",JSON.stringify(currentuser));
-        $scope.spaces = currentuser.space;
+        //var currentuser = JSON.parse(localStorage.getItem("welcome.easymail"));
+        //currentuser.space.push(newspace);
+        //localStorage.setItem("welcome.easymail",JSON.stringify(currentuser));
+        //$scope.spaces = currentuser.space;
+
+        //Here should be an operation of the Database. But for now, it's only manipulating the $scope.spaces variable.
+        //**********DATABASE*****************        
+        $scope.spaces.push(newspace);
         setTimeout(function(){   
             PageTransitions();
         },3000);
@@ -71,7 +81,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
         newSpace.id = "space_"+newSpaceList.length;
         newSpaceList.push(newSpace);
         $scope.spaces = newSpaceList;
-        console.log($scope.spaces);
         setTimeout(function(){   
             PageTransitions();
         },3000);
@@ -98,10 +107,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
         }
     });
     
-    $scope.$watch('activeSpaceIndex', function(){
-        console.log("changed from controller");
-    }, true);
-    
    function safeApply(scope, fn) {
         (scope.$$phase || scope.$root.$$phase) ? fn() : scope.$apply(fn);
     }
@@ -113,7 +118,9 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
         safeApply($scope,function(){});
     };
     $scope.sendMsg = function(){
-        sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected);
+        $scope.email.from = $scope.activeUser;
+        console.log($scope.email);
+        GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected);
         $("#compose").hide();   
     };
     $scope.close = function(){
@@ -124,7 +131,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
         $("#emailBody_"+spaceId+"_"+index).toggle("fast");
         if($("#emailThread_"+spaceId+"_"+index).hasClass("unreadThread")){
             $("#emailThread_"+spaceId+"_"+index).removeClass("unreadThread");
-            console.log(lastMsg);
             markAsRead(lastMsg);
         }
         $("#emailThread_"+spaceId+"_"+index).toggleClass("activeThread");
@@ -132,13 +138,5 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
     $scope.updateFairySelected = function(fairySelected){
         $scope.fairySelected = fairySelected;
         safeApply($scope,function(){});
-    }
-    
-    function assignColor(obj){
-        var colors = ['#ff0000', '#00ff00', '#0000ff']; 
-        var random_color = colors[Math.floor(Math.random() * colors.length)];
-        obj.css('background-color', random_color);
-    }
-    
-       
+    }  
 }]);
