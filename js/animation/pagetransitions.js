@@ -66,22 +66,23 @@ var PageTransitions = function() {
 		},function(){
             $(this).children(".deleteSpace").fadeOut('fast');
         });
-        $(".deleteSpace").unbind('click');//This solves the problem where the click event is fired multiple times
+        //$(".deleteSpace").unbind('click');//This solves the problem where the click event is fired multiple times
         $(".deleteSpace").on( 'click', function(event) {
-            event.stopPropagation();
+            /*event.stopPropagation();
             event.preventDefault();
             var confirmMsg = confirm("Are you sure to delete the space?");
             if (confirmMsg == true) {
                 var index = $(this).parent().data('pageno')-1;
                 console.log(index);
-                var currentUser = JSON.parse(localStorage.getItem('welcome.easymail'));
+                //var currentUser = JSON.parse(localStorage.getItem('welcome.easymail'));
+                var currentUser = scope.activeUser;
                 currentUser.space.splice(index,1);
                 localStorage.setItem('welcome.easymail',JSON.stringify(currentUser));
                 change("spaces",currentUser.space);
             } else {
                 
             }
-            return false;
+            return false;*/
 		} );
 	}
     

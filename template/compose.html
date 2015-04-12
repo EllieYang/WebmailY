@@ -7,13 +7,13 @@
         <span class="formLabel">To:</span><input type="email" ng-model="email.to"><br><br>
         <span class="formLabel">Space (S1):</span>
         <span data-ng-repeat="space in spaces" class="spaceList">
-           <input type="radio" ng-model="email.space" ng-value="space.id">{{space.name}}</input>
+<!--           <input type="radio" ng-model="email.space" ng-value="space.id">{{space.name}}</input>-->
+            <input type="radio" ng-model="email.space" ng-value="space.name">{{space.name}}</input>
         </span>
         <br><br>
         <span class="formLabel">Space (S2):</span>
-        <span>{{activeSpace.name}}&nbsp;&nbsp;</span><input type="checkbox" ng-model="fairySelected" ng-change="updateFairySelected(fairySelected)">Send Space Fairy{{fairySelected}}</input>
+        <input type="checkbox" ng-model="fairySelected" ng-change="updateFairySelected(fairySelected)">Send Space Fairy</input>
         <br><br>
-        <!--    Space:<br><input type="text" ng-model="email.space"><br>-->
         <span class="formLabel">Subject:</span><input type="text" ng-model="email.subject"><br><br>
         <span class="formLabel"></span><textarea ng-model="email.body"></textarea><br>
         <br><br>

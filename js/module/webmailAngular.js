@@ -9,7 +9,27 @@ webmaily.directive('spaceOverview', function() {
                 $("#activeSpaceIndex").val(scope.activeSpaceIndex);
                 scope.$apply();
               });
-        
+          
+            var deleteBtn = elem.children(".deleteSpace");
+            deleteBtn.unbind('click');//This solves the problem where the click event is fired multiple times
+            deleteBtn.bind('click',function(event){
+                event.stopPropagation();
+                event.preventDefault();
+                var confirmMsg = confirm("Are you sure to delete the space?");
+                if (confirmMsg == true) {
+                    var index = $(this).parent().data('pageno')-1;
+                    console.log(index);
+                    //HRERE SUPPOSE TO BE DATABASE INTERACTION. FOR NOW IT'S ONLY SPACES
+                    //**************DATABASE***********************
+                    var currentScopeList = scope.spaces;
+                    currentScopeList.splice(index,1);
+                    scope.spaces = currentScopeList;
+                    scope.$apply();
+                } else {
+                    
+                }
+                //return false;
+            });
     }
   };
 });
@@ -60,7 +80,23 @@ webmaily.factory('GmailAPIService',function(){
                 //var logInfo = document.getElementById('logInfo');
                 //logInfo.innerHTML = resp.emailAddress+'<br/>';
                 $("#logInfo").val(resp.emailAddress);
-               
+                getAllThreads();
+            });
+        });
+    }
+    
+    function getAllThreads(){
+        //var allThreads=[];
+        var scope = angular.element($("#controllerTag")).scope();
+        var req = gapi.client.gmail.users.threads.list({
+            'userId':'me'
+         });
+        req.execute(function(resp){
+            resp.result.threads.forEach(function(thread){
+                var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
+                threadResp.execute(function(response){
+                    scope["allThreads"].push(response);
+                });
             });
         });
     }
@@ -68,7 +104,6 @@ webmaily.factory('GmailAPIService',function(){
     var getAllThreads1 = function (spaces){
         
         var scope = angular.element($("#controllerTag")).scope();
-        var threadsResult={};
         var req1 = gapi.client.gmail.users.threads.list({
             'userId':'me'
          });
@@ -82,18 +117,15 @@ webmaily.factory('GmailAPIService',function(){
                 threadResp.execute(function(response){
                     var content = response.result;
                     var lastMsg = content.messages[(content.messages.length-1)];
-                    
+                    if(lastMsg.labelIds){
+                        if(lastMsg.labelIds[0]=="INBOX"){
                     if(lastMsg.payload){
+                        
                         lastMsg.payload.headers.forEach(function(header){
-                            if((header.name == "Space-Fairy") && JSON.parse(header.value).state == true){
-                                
-                                /*scope.$apply(function(){
-                                    scope["fairyRequest"] = true;
-                                   
-                                });*/
-                                threadsResult.fairyRequest = true;
-                            }
-                            if((header.name == "Email-To-Space") && header.value == space.id){
+                            
+                            //if((header.name == "Email-To-Space") && header.value == space.id){
+                            if(header.name == "Email-To-Space"){
+                               if (header.value == space.name){
                                 //console.log(lastMsg);
                                 var pushedThread = {"thread":thread};
                                 pushedThread.lastMsg = {"msg":lastMsg,"header":{},"snippet":''};
@@ -122,10 +154,27 @@ webmaily.factory('GmailAPIService',function(){
                                 scope.$apply(function(){
                                     scope["userSpaces"][index]["threads"].push(pushedThread);
                                 });
-                                
+                               }else{//There are messages that do not match any space.
+                                   lastMsg.payload.headers.forEach(function(header){
+                                        if((header.name == "Space-Fairy") && JSON.parse(header.value).state == true){
+                                            //console.log(header.value);
+//                                            JSON.parse(header.value).state == false;
+//                                            console.log(lastMsg);
+//                                            var currentSpaceList = scope.spaces;
+//                                            var newSpace = JSON.parse(header.value).space;
+//                                            newSpace.id='space_request';
+//                                            currentSpaceList.splice(0,0,newSpace);
+                                            //console.log(currentSpaceList);
+                                           // scope.spaces = currentSpaceList;   
+                                        }
+                                   });
+                                  
+                               }   
                             }
                         });
                         
+                    }
+                }
                     }
                 });
             });
@@ -146,15 +195,16 @@ webmaily.factory('GmailAPIService',function(){
                 body: emailMsg["body"]
                 //,html: "<b>"+emailMsg["body"]+"</b>"+"<i>From the Easymail Team</i>" 
             });
-            mailcomposer.addHeader("email-to-space",emailMsg["space"]);
+            mailcomposer.addHeader("email-to-space",activeSpace.name);
             mailcomposer.addHeader("email-from-space",activeSpace);
             var fairyVal = {"state":false,"space":{}};
             if (fairySelected){
                 fairyVal.state=true;
                 fairyVal.space = activeSpace;
+                
             }
+                        
             mailcomposer.addHeader("space-fairy",JSON.stringify(fairyVal));
-            //console.log(mailcomposer);
             mailcomposer.buildMessage(function(err, emailStr){
             //console.log(err || emailStr);
             var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
@@ -188,6 +238,7 @@ webmaily.factory('GmailAPIService',function(){
     }
 
     return {
+      
       getAllThreads1: getAllThreads1,
       handleClientLoad:handleClientLoad,
       sendMessage:sendMessage

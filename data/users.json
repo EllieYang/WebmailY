@@ -3,11 +3,7 @@
         "email":"welcome.easymail@gmail.com",
         "name":"Easy Mail",
         "space": [
-                    {
-                        "id":"space_request",
-                        "name":"NewSpaceName",
-                        "subSpace":[]
-                    },
+
                     {
                         "id":"space_0",
                         "name":"Thesis",
