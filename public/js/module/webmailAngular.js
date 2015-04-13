@@ -3,7 +3,6 @@ webmaily.directive('spaceOverview', function() {
   return {
       restrict: 'AE',
       link: function(scope, elem, attrs) {
-            
             elem.bind('click',function(){
                 scope.activeSpaceIndex = attrs['pageno']-1;
                 $("#activeSpaceIndex").val(scope.activeSpaceIndex);
@@ -17,14 +16,15 @@ webmaily.directive('spaceOverview', function() {
                 event.preventDefault();
                 var confirmMsg = confirm("Are you sure to delete the space?");
                 if (confirmMsg == true) {
-                    var index = $(this).parent().data('pageno')-1;
-                    console.log(index);
+                    //var index = $(this).parent().data('pageno')-1;
+                    //console.log(index);
                     //HRERE SUPPOSE TO BE DATABASE INTERACTION. FOR NOW IT'S ONLY SPACES
                     //**************DATABASE***********************
-                    var currentScopeList = scope.spaces;
-                    currentScopeList.splice(index,1);
-                    scope.spaces = currentScopeList;
-                    scope.$apply();
+                    //var currentScopeList = scope.spaces;
+                    //currentScopeList.splice(index,1);
+                    //scope.spaces = currentScopeList;
+                    //scope.$apply();
+                    scope.removeSpace(scope.activeUser,$(this).data('spacename'));
                 } else {
                     
                 }
@@ -80,6 +80,8 @@ webmaily.factory('GmailAPIService',function(){
                 //var logInfo = document.getElementById('logInfo');
                 //logInfo.innerHTML = resp.emailAddress+'<br/>';
                 $("#logInfo").val(resp.emailAddress);
+                var scope = angular.element($("#controllerTag")).scope();
+                scope.getSpaces(resp.emailAddress);
                 getAllThreads();
             });
         });

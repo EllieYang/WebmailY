@@ -35,6 +35,9 @@ html, body { height: 100%; }
 	visibility: visible;
 	z-index: 1;
 }
+.pt-page-current{
+    z-index:-1;
+}
 
 .no-js body {
 	overflow: auto;

@@ -16,7 +16,7 @@
                    </div>
                </div>
                <button ng-click="createNewSpace(userSpace.space);$event.stopPropagation();" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">New Space</button>&nbsp;&nbsp;<button ng-click="" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Map Space</button>
-                <button class="glyphicon glyphicon-trash deleteSpace"></button>
+                <button class="glyphicon glyphicon-trash deleteSpace" data-spacename="{{userSpace.space.name}}"></button>
             </div>
             <div class="col-md-3 addNewSpace">
                 <div class="userSpaceThread">

@@ -16,7 +16,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
     $scope.fairyRequest = false;
     $scope.activeUser = "me";
     $scope.allThreads = [];
-    $scope.usersTesting = "";
+    //$scope.usersTesting = "";
     //Id upbound
     var idUpB = 0;
     var inboxMessages = [];
@@ -24,45 +24,61 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
     angular.element(window).bind('load', function() {
         //handleClientLoad();
         GmailAPIService.handleClientLoad();
-        
-        $http.get('data/users.json').success(function(data){ 
-            $scope.userSpaces = [];
-            data[0].space.forEach(function(space){
-                var userSpace = {};
-                userSpace.space = space;
-                userSpace.threads = [];
-                if(space.id.substring(0,13)=='space_request'){
-                    userSpace.type="request";
-                }else{
-                    userSpace.type="normal";
+        $timeout(function(){
+            $scope.activeUser = $("#logInfo").val();
+            //$scope.getSpaces($scope.activeUser);
+            /*data.forEach(function(userInfo){
+                if(userInfo.email == $scope.activeUser){
+                    $scope.spaces = userInfo.space;
                 }
-                $scope.userSpaces.push(userSpace);
-            });
-            $timeout(function(){
-                
-                $scope.activeUser = $("#logInfo").val();
-                data.forEach(function(userInfo){
-                    if(userInfo.email == $scope.activeUser){
-                        $scope.spaces = userInfo.space;
-                    }
-                });
-                //$scope.spaces = data[0].space;
-            },3000);
-        });
+            });*/
+            //$scope.spaces = data[0].space;
+        },3000);
     });
     
-    $scope.getUsers = function(){
-        $http.get('http://0.0.0.0:9001/load').success(function(data){
-            $scope.usersTesting = data;
+    $scope.getSpaces = function(emailAddress){
+        $http.get('http://0.0.0.0:9001/load',{params:{user:emailAddress}}).success(function(data){
+            $scope.assignSpaceData(data);
         });
+    }
+    
+    $scope.addSpace = function(emailAddress,spaceId, spaceName, subSpace){
+
+        $http.get('http://0.0.0.0:9001/addSpace',{params:{user:emailAddress,spaceId:spaceId,spaceName:spaceName,subSpace:subSpace}}).success(function(data){
+            $scope.getSpaces(emailAddress);
+        });
+    }
+    
+    $scope.removeSpace = function(emailAddress,spaceName){
+
+        $http.get('http://0.0.0.0:9001/removeSpace',{params:{user:emailAddress,spaceName:spaceName}}).success(function(data){
+            $scope.getSpaces(emailAddress);
+        });
+    }
+    
+    $scope.assignSpaceData = function (data){
+        var spaces = [];
+        data.forEach(function(space){
+            var subList = [];
+            if(space.subSpace!==""){
+                var list = space.subSpace.split(',');
+                list.forEach(function(sub,index){
+                    var newSub = {"id":'space_'+idUpB,"name":sub,"subSpace":[]};
+                    subList.push(newSub);
+                });
+            }
+            var newspace = {"id":space.id,"name":space.name,"subSpace":subList,"uniqId":space.uniqId};
+            spaces.push(newspace);
+        });
+        $scope.spaces = spaces;
     }
     
     $scope.addNewSpace = function(newSpaceName) {
         var spaceNameVal = $("#newSpaceName").val();
         var subspacesVal = $("#newSubspaces").val();
+        var subspacesObjList =[];
         if(subspacesVal){
             var subspacesList = subspacesVal.split(';');
-            var subspacesObjList =[];
             if(subspacesList.length){
                 subspacesList.forEach(function(element, index){
                     //var newSub = new Space('space_'+index, element,[]);
@@ -74,39 +90,24 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
                 });
             }
         }
-        
-        
-        var newspace = {"id":'space_'+($scope.spaces.length+1),"name":spaceNameVal,"subSpace":subspacesObjList};
-        //var newspace = new Space('space_'+($scope.spaces.length+1),newSpaceName,[]);
-        //var currentuser = JSON.parse(localStorage.getItem("welcome.easymail"));
-        //currentuser.space.push(newspace);
-        //localStorage.setItem("welcome.easymail",JSON.stringify(currentuser));
-        //$scope.spaces = currentuser.space;
-
-        //Here should be an operation of the Database. But for now, it's only manipulating the $scope.spaces variable.
-        //**********DATABASE*****************        
-        $scope.spaces.push(newspace);
-        setTimeout(function(){   
-            PageTransitions();
-        },3000);
-        safeApply($scope,function(){});  
+        var newspace = {"id":'space_'+($scope.spaces.length+1),"name":spaceNameVal,"subSpace":subspacesObjList};  
+        $scope.addSpace($scope.activeUser,newspace.id, newspace.name, JSON.stringify(subspacesObjList));
     };
     
     $scope.createNewSpace = function(newSpace) {
-        
-        //Here should be an operation of the Database. But for now, it's only manipulating the $scope.spaces variable.
-        //**********DATABASE*****************
-        var newSpaceList = $scope.spaces;
-        var index = newSpaceList.indexOf(newSpace);
-        newSpaceList.splice(index, 1);
-        //newSpace.id = "space_"+newSpaceList.length;
         newSpace.id = "space_"+idUpB;
-        newSpaceList.push(newSpace);
-        $scope.spaces = newSpaceList;
-        setTimeout(function(){   
-            PageTransitions();
-        },3000);
-        safeApply($scope,function(){}); 
+        var subspacesObjList =[];
+        if(newSpace.subSpace.length){
+            newSpace.subSpace.forEach(function(element){
+                if(element){
+                    var newSub = {"id":'space_'+idUpB,"name":element.name,"subSpace":[]};
+                    subspacesObjList.push(newSub);
+                }  
+            });
+        }
+        
+        var newspace = {"id":newSpace.id,"name":newSpace.name,"subSpace":subspacesObjList};  
+        $scope.addSpace($scope.activeUser,newspace.id, newspace.name, JSON.stringify(subspacesObjList));
     };
     
     $scope.$watchCollection('spaces', function (newVal, oldVal) {
@@ -133,6 +134,10 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
     
     $scope.$watch('allThreads', function (newVal) {
         classifyThreads(newVal);
+    },true);
+    
+    $scope.$watch('activeUser', function (newVal) {
+        $scope.getSpaces(newVal);
     },true);
     
     var Message = function Message(id, labelIds, threadId, snippet, body, mimeType, from, date, to, subject, MIMEVersion, contentType, emailFromSpace, emailToSpace, spaceFairy){
