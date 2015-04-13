@@ -97,7 +97,6 @@ body#webmail{
     color:#fff;
     font-weight:100;
     font-size:26px;
-    text-transform: uppercase;
 }
 #compose{
     display:none;

@@ -92,12 +92,16 @@ webmaily.factory('GmailAPIService',function(){
             'userId':'me'
          });
         req.execute(function(resp){
-            resp.result.threads.forEach(function(thread){
-                var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
-                threadResp.execute(function(response){
-                    scope["allThreads"].push(response);
-                });
+            
+               
+                resp.result.threads.forEach(function(thread){
+                    var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
+                    threadResp.execute(function(response){
+                        scope["allThreads"].push(response);
+                    });
             });
+            
+            
         });
     }
     
@@ -204,7 +208,7 @@ webmaily.factory('GmailAPIService',function(){
                 
             }
                         
-            mailcomposer.addHeader("space-fairy",JSON.stringify(fairyVal));
+            mailcomposer.addHeader("space-fairy",angular.toJson(fairyVal));
             mailcomposer.buildMessage(function(err, emailStr){
             //console.log(err || emailStr);
             var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
@@ -238,7 +242,7 @@ webmaily.factory('GmailAPIService',function(){
     }
 
     return {
-      
+      getAllThreads:getAllThreads,
       getAllThreads1: getAllThreads1,
       handleClientLoad:handleClientLoad,
       sendMessage:sendMessage

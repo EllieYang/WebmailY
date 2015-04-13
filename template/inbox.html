@@ -9,7 +9,7 @@
                
                <div class="userSpaceThread">
                    <span class="spaceName">{{userSpace.space.name}}</span>
-                   <div class="row">
+                   <div class="row" ng-class="{'ng-hide':userSpace.space.subSpace.length==0}">
                         <div data-ng-repeat="subSpace in userSpace.space.subSpace" class="col-md-4 subSpaceDivCon">
                             <div class="subSpaceDiv">{{subSpace.name}}</div>
                        </div>

@@ -30,7 +30,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
                 var userSpace = {};
                 userSpace.space = space;
                 userSpace.threads = [];
-                if(space.id=='space_request'){
+                if(space.id.substring(0,13)=='space_request'){
                     userSpace.type="request";
                 }else{
                     userSpace.type="normal";
@@ -53,14 +53,22 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
     $scope.addNewSpace = function(newSpaceName) {
         var spaceNameVal = $("#newSpaceName").val();
         var subspacesVal = $("#newSubspaces").val();
-        var subspacesList = subspacesVal.split(';');
-        var subspacesObjList =[];
-        subspacesList.forEach(function(element, index){
-            //var newSub = new Space('space_'+index, element,[]);
-            var newSub = {"id":'space_'+idUpB,"name":element,"subSpace":[]};
-            subspacesObjList.push(newSub);
-        });
-        console.log(subspacesObjList);
+        if(subspacesVal){
+            var subspacesList = subspacesVal.split(';');
+            var subspacesObjList =[];
+            if(subspacesList.length){
+                subspacesList.forEach(function(element, index){
+                    //var newSub = new Space('space_'+index, element,[]);
+                    if(element){
+                        var newSub = {"id":'space_'+idUpB,"name":element,"subSpace":[]};
+                        subspacesObjList.push(newSub);
+                    }
+                    
+                });
+            }
+        }
+        
+        
         var newspace = {"id":'space_'+($scope.spaces.length+1),"name":spaceNameVal,"subSpace":subspacesObjList};
         //var newspace = new Space('space_'+($scope.spaces.length+1),newSpaceName,[]);
         //var currentuser = JSON.parse(localStorage.getItem("welcome.easymail"));
@@ -102,7 +110,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
                 var userSpace = {};
                 userSpace.space = space;
                 userSpace.threads = [];
-                if(space.id=='space_request'){
+                if(space.id.substring(0,13)=='space_request'){
                     userSpace.type="request";
                 }else{
                     userSpace.type="normal";
@@ -117,7 +125,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
     });
     
     $scope.$watch('allThreads', function (newVal) {
-        
         classifyThreads(newVal);
     },true);
     
@@ -176,7 +183,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
                 }
             });
         }
-        //console.log(inboxMsgs);
         inboxMessages = inboxMsgs;
         updateUserSpace(inboxMsgs);
     }
@@ -196,7 +202,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
                 newSpaceArray.push(emailMessage);
             }
         });
-        
         //Deal with emails that belong to a space
         spaceArrayD.forEach(function(space,index){
             var spaceName = Object.keys(space)[0];
@@ -220,21 +225,18 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
         });
         //Deal with emails that do not belong to a space
         if(newSpaceArray.length){
-            console.log(newSpaceArray.length);
             var newSpaceList = [];
-            newSpaceArray.forEach(function(emailMessage){
+            newSpaceArray.forEach(function(emailMessage,index){
                 var spaceFairy = emailMessage.spaceFairy;
-                //console.log(JSON.parse(spaceFairy));
-                console.log(spaceFairy.state);
                 if(spaceFairy.state==true){
-                    
                     var newSpace = spaceFairy.space;
-                    newSpace.id = 'space_request';
+                    newSpace.id = 'space_request_'+index;
                     newSpaceList.push(newSpace);
                 }
             });
             if(newSpaceList.length){
-                $scope.spaces = newSpaceList.concat($scope.spaces);
+                newSpaceList = newSpaceList.concat($scope.spaces);
+                $scope.spaces = newSpaceList;
             } 
         }
     }
