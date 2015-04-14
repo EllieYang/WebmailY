@@ -4,6 +4,7 @@ webmaily.directive('spaceOverview', function() {
       restrict: 'AE',
       link: function(scope, elem, attrs) {
             elem.bind('click',function(){
+                $("#spaceOverview").show();
                 scope.activeSpaceIndex = attrs['pageno']-1;
                 $("#activeSpaceIndex").val(scope.activeSpaceIndex);
                 scope.$apply();
@@ -93,18 +94,17 @@ webmaily.factory('GmailAPIService',function(){
         var req = gapi.client.gmail.users.threads.list({
             'userId':'me'
          });
-        req.execute(function(resp){
-            
-               
+        //setInterval(function(){
+            req.execute(function(resp){
                 resp.result.threads.forEach(function(thread){
                     var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
                     threadResp.execute(function(response){
                         scope["allThreads"].push(response);
-                    });
+                        });
+                });
             });
-            
-            
-        });
+        //},3000);
+        
     }
     
     var getAllThreads1 = function (spaces){
@@ -229,7 +229,7 @@ webmaily.factory('GmailAPIService',function(){
     };
     
     //Function Mark the message as read
-    function markAsRead(message){
+    var markAsRead = function(message){
         message.messageStatus = "READ";
         if(message.msg.labelIds.indexOf("UNREAD")!==-1){
             var request = gapi.client.gmail.users.messages.modify({
@@ -247,7 +247,8 @@ webmaily.factory('GmailAPIService',function(){
       getAllThreads:getAllThreads,
       getAllThreads1: getAllThreads1,
       handleClientLoad:handleClientLoad,
-      sendMessage:sendMessage
+      sendMessage:sendMessage,
+      markAsRead:markAsRead
     };
 }
 );

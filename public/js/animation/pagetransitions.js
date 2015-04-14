@@ -56,6 +56,7 @@ var PageTransitions = function() {
         $spaceOverview.on( 'click', function() {
             //nextPage($(this).data('animation'));
             gotoPage(0,$(this).data('animation'));
+            $("#spaceOverview").hide();
 		} );
         $(".spaceInOverview").on( 'click', function() {
             var animation=9;

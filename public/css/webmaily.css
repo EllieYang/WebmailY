@@ -13,6 +13,11 @@ body#webmail{
 }
 #logInfo{
     float:right;
+    width:200px;
+    border:none;
+}
+#spaceOverview{
+    display:none;
 }
 #content{
     margin:0 auto;

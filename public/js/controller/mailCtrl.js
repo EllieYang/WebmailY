@@ -1,4 +1,4 @@
-webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIService',function($scope,$http,$timeout,GmailAPIService){
+webmaily.controller("mailController",['$scope','$http','$timeout','$interval','GmailAPIService',function($scope,$http,$timeout,$interval,GmailAPIService){
     
     $scope.labels = [];
     $scope.allThreads = [];
@@ -34,6 +34,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
             });*/
             //$scope.spaces = data[0].space;
         },3000);
+        
     });
     
     $scope.getSpaces = function(emailAddress){
@@ -118,6 +119,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
                 var userSpace = {};
                 userSpace.space = space;
                 userSpace.threads = [];
+                userSpace.unreadMsgNo = 0;
                 if(space.id.substring(0,13)=='space_request'){
                     userSpace.type="request";
                 }else{
@@ -129,6 +131,9 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
             //GmailAPIService.getAllThreads1($scope.spaces);
             updateUserSpace(inboxMessages);
             safeApply($scope,function(){});
+            setTimeout(function(){   
+                PageTransitions();
+             },1);
         }
     });
     
@@ -218,13 +223,17 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
         spaceArrayD.forEach(function(space,index){
             var spaceName = Object.keys(space)[0];
             var messageArray = space[spaceName];//Messages that belong to this space
+            $scope.userSpaces[index]["threads"]=[];
             if(messageArray.length){
+                
+                var unreadMsgNo = 0;
                 messageArray.forEach(function(emailMessage){
                     var pushedThread = {};
                     pushedThread.lastMsg = {"msg":emailMessage,"header":{},"snippet":''};
                     pushedThread.lastMsg.snippet = emailMessage.snippet ? emailMessage.snippet : 'This message has no content';
                     if(emailMessage.labelIds.indexOf("UNREAD") !== -1){
                         pushedThread.lastMsg.messageStatus = "UNREAD";
+                        unreadMsgNo++;
                     }else{
                         pushedThread.lastMsg.messageStatus = "READ";
                     }
@@ -233,7 +242,9 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
                     $scope.userSpaces[index]["threads"].push(pushedThread);
                 });
                 safeApply($scope,function(){});
+                $scope.userSpaces[index]['unreadMsgNo'] = unreadMsgNo;
             }
+            
         });
         //Deal with emails that do not belong to a space
         if(newSpaceArray.length){
@@ -280,9 +291,10 @@ webmaily.controller("mailController",['$scope','$http','$timeout','GmailAPIServi
         $("#emailBody_"+spaceId+"_"+index).toggle("fast");
         if($("#emailThread_"+spaceId+"_"+index).hasClass("unreadThread")){
             $("#emailThread_"+spaceId+"_"+index).removeClass("unreadThread");
-            markAsRead(lastMsg);
+            GmailAPIService.markAsRead(lastMsg);
         }
         $("#emailThread_"+spaceId+"_"+index).toggleClass("activeThread");
+        //updateUserSpace(inboxMessages);
     }
     $scope.updateFairySelected = function(fairySelected){
         $scope.fairySelected = fairySelected;
