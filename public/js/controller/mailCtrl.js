@@ -280,7 +280,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.sendMsg = function(){
         $scope.email.from = $scope.activeUser;
         console.log($scope.email);
-        GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected);
+        GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected,$scope.email.space);
         $("#compose").hide();   
     };
     $scope.close = function(){

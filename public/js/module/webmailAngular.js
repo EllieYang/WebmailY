@@ -7,6 +7,7 @@ webmaily.directive('spaceOverview', function() {
                 $("#spaceOverview").show();
                 scope.activeSpaceIndex = attrs['pageno']-1;
                 $("#activeSpaceIndex").val(scope.activeSpaceIndex);
+                scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
                 scope.$apply();
               });
           
@@ -31,6 +32,23 @@ webmaily.directive('spaceOverview', function() {
                 }
                 //return false;
             });
+    }
+  };
+});
+
+webmaily.directive('backInbox', function() {
+  return {
+      restrict: 'A',
+      link: function(scope, elem, attrs) {
+        console.log(elem);
+        elem.bind('click',function(){
+            console.log("clicked");
+            scope.activeSpaceIndex = -1;
+            $("#activeSpaceIndex").val(scope.activeSpaceIndex);
+            scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
+            console.log(scope.activeSpace);
+            scope.$apply();
+          });
     }
   };
 });
@@ -190,7 +208,7 @@ webmaily.factory('GmailAPIService',function(){
     };
     
     //Sending Messages
-    var sendMessage = function (emailMsg,activeSpace,fairySelected) { 
+    var sendMessage = function (emailMsg,activeSpace,fairySelected,emailToSpace) { 
         
         require(["js/lib/bundle.js"],function(boop){
             var mailcomposer = boop();
@@ -201,16 +219,19 @@ webmaily.factory('GmailAPIService',function(){
                 body: emailMsg["body"]
                 //,html: "<b>"+emailMsg["body"]+"</b>"+"<i>From the Easymail Team</i>" 
             });
-            mailcomposer.addHeader("email-to-space",activeSpace.name);
-            mailcomposer.addHeader("email-from-space",activeSpace);
+            console.log(activeSpace);
+            if(activeSpace){
+                mailcomposer.addHeader("email-from-space",activeSpace);
+            }else{
+                mailcomposer.addHeader("email-from-space","");     
+            }
+            mailcomposer.addHeader("email-to-space",emailMsg['space']);
             var fairyVal = {"state":false,"space":{}};
             if (fairySelected){
                 fairyVal.state=true;
-                fairyVal.space = activeSpace;
-                
+                fairyVal.space = activeSpace;    
             }
-                        
-            mailcomposer.addHeader("space-fairy",angular.toJson(fairyVal));
+            mailcomposer.addHeader("space-fairy",angular.toJson(fairyVal));            
             mailcomposer.buildMessage(function(err, emailStr){
             //console.log(err || emailStr);
             var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
