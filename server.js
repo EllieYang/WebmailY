@@ -139,7 +139,20 @@ app.get('/removeSpace*',function(req,res){
             res.end();
         }
     })
-})
+});
+
+app.get('/updateSpace*',function(req,res){
+    
+    var newQuery = "UPDATE spaces SET fairy='"+req.query.fairyId+"' WHERE uniqId='"+req.query.uniqId+"'";
+    
+    dbconnection.query(newQuery,function(error,rows){
+        if(error){
+            console.log("Problem with MYSQL "+ error);
+        }else {
+            res.end();
+        }
+    })
+});
 
 app.get('/getLastId*',function(req,res){
     var emailAddress = req.query.user;

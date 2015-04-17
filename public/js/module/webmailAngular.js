@@ -140,8 +140,9 @@ webmaily.factory('GmailAPIService',function(){
             var fairyVal = {"state":false,"space":{}};
             if (fairySelected){
                 fairyVal.state=true;
-                fairyVal.space = activeSpace;    
+                  
             }
+            fairyVal.space = activeSpace;  
             //mailcomposer.addHeader("space-fairy",angular.toJson(fairyVal)); 
             mailcomposer.addHeader("space-fairy",fairyVal); 
             mailcomposer.buildMessage(function(err, emailStr){
