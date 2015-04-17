@@ -117,7 +117,7 @@ webmaily.factory('GmailAPIService',function(){
         
     }    
     //Sending Messages
-    var sendMessage = function (emailMsg,activeSpace,fairySelected,emailToSpace) { 
+    var sendMessage = function (emailMsg,activeSpace,fairySelected,emailToSpace,attachedFairy) { 
         
         require(["js/lib/bundle.js"],function(boop){
             var mailcomposer = boop();
@@ -130,14 +130,13 @@ webmaily.factory('GmailAPIService',function(){
                 body: emailMsg["body"]
                 //,html: "<b>"+emailMsg["body"]+"</b>"+"<i>From the Easymail Team</i>" 
             });
-            console.log(activeSpace);
             if(activeSpace){
                 mailcomposer.addHeader("email-from-space",activeSpace);
             }else{
                 mailcomposer.addHeader("email-from-space","");     
             }
             mailcomposer.addHeader("email-to-space",emailMsg['space']);
-            var fairyVal = {"state":false,"space":{}};
+            var fairyVal = {"state":false,"space":{},"attachedFairy":attachedFairy};
             if (fairySelected){
                 fairyVal.state=true;
                   

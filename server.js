@@ -90,7 +90,6 @@ app.get('/addSpace*',function(req,res){
         });
     }
     var fairyId = req.query.fairy;
-    console.log((fairyId<0));
     if(fairyId !== '-1'){//
         //var fairyId = req.query.fairy;
         console.log(fairyId);
@@ -143,13 +142,19 @@ app.get('/removeSpace*',function(req,res){
 
 app.get('/updateSpace*',function(req,res){
     
-    var newQuery = "UPDATE spaces SET fairy='"+req.query.fairyId+"' WHERE uniqId='"+req.query.uniqId+"'";
-    
-    dbconnection.query(newQuery,function(error,rows){
+    dbconnection.query("SELECT fairy from spaces WHERE uniqId='"+req.query.uniqId+"'",function(error,rows){
         if(error){
             console.log("Problem with MYSQL "+ error);
         }else {
-            res.end();
+            var newFairyVal = rows[0].fairy + ','+req.query.fairyId;
+            var newQuery = "UPDATE spaces SET fairy='"+newFairyVal+"' WHERE uniqId='"+req.query.uniqId+"'";
+            dbconnection.query(newQuery,function(error,rows){
+                if(error){
+                    console.log("Problem with MYSQL "+ error);
+                }else {
+                    res.end();
+                }
+            })
         }
     })
 });
@@ -163,6 +168,36 @@ app.get('/getLastId*',function(req,res){
             console.log("Problem with MYSQL "+ error);
         }else {
             res.end(JSON.stringify(rows));
+        }
+    })
+});
+
+function intersect(a, b) {
+    var t;
+    if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
+    return a.filter(function (e) {
+        if (b.indexOf(e) !== -1) return true;
+    });
+}
+
+app.get('/getAttachedFairy*',function(req,res){
+    var emailAddress = req.query.user;
+    var fairyArray = req.query.space;
+    var newQuery = "SELECT id FROM fairies WHERE owner='"+req.query.user+"'";
+    var ownedFairy="";
+    
+    dbconnection.query(newQuery,function(error,rows){
+        if(error){
+            console.log("Problem with MYSQL "+ error);
+        }else {
+            //res.end(JSON.stringify(rows)); 
+            var idList = rows.map(function(x){return (x.id).toString()});
+            console.log(idList);
+            console.log(fairyArray);
+            ownedFairy = intersect(idList,fairyArray);
+            ownedFairy = ownedFairy[0];
+            console.log(ownedFairy);
+            res.end(ownedFairy);
         }
     })
 });
