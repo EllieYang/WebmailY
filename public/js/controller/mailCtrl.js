@@ -227,7 +227,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         if(allThreads.length){
             allThreads.forEach(function(thread){
                 var content = thread.result;
-                console.log(thread);
+                
                 var lastMsg = content.messages[(content.messages.length-1)];
                 if(lastMsg.labelIds){
                     if(lastMsg.labelIds[0]=="INBOX" || lastMsg.labelIds[0]=="SENT"){
@@ -300,6 +300,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         
         var spaceRequestList = [];
         inboxThreads.forEach(function(thread){
+            console.log(thread);
             if(thread.messages.length){
                 var lastMsg = thread.messages[thread.messages.length-1];
                 var fairyList = userSpaceDataList.map(function(x){return x.fairy});
@@ -410,6 +411,9 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         $scope.email.from = $scope.activeUser;
         $scope.email.reply = false;
         //var attachedFairy = $scope.getAttachedFairy($scope.activeUser,$scope.activeSpace);
+        console.log($scope.email);
+        console.log($scope.activeSpace);
+        
         $http.get('http://0.0.0.0:9001/getAttachedFairy',{params:{user:$scope.activeUser,space:$scope.activeSpace.fairyId}}).success(function(data){
             GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected,$scope.email.space,data);
             $("#compose").hide();
@@ -423,17 +427,12 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         var messageId = thread.lastMsg.msg.messageID;
         var inReplyTo = messageId;
        // var reference = messageId;
-        var references = "";
+        var references = [];
         thread.messages.forEach(function(message){
-            if(message.payload){
-                message.payload.headers.forEach(function(header){
-                    if(header.name=="Message-ID" || header.name=="Message-Id"){
-                        references = references + header.value + " ";
-                    }
-                });
-            }
-            console.log(references);
+            message.msg.messageID
+            references.push(message.msg.messageID);
         });
+        
         var emailMsg = {};
         emailMsg.to = thread.lastMsg.msg.from;
         emailMsg.from = $scope.activeUser;
@@ -460,8 +459,12 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         $("#emailThread_"+spaceId+"_"+index).toggleClass("activeThread");
     };
     
-    $scope.messageHeaderOnClick = function(threadId, index){
-       $("#emailBody_"+threadId+"_"+index).toggle("fast");
+    $scope.messageHeaderOnClick = function(threadId, index,message){
+        $("#emailBody_"+threadId+"_"+index).toggle("fast");
+        if($("#emailMessage_"+threadId+"_"+index).hasClass("unreadThread")){
+            $("#emailMessage_"+threadId+"_"+index).removeClass("unreadThread");
+            GmailAPIService.markAsRead(message);
+        }
     };
     
     /*$scope.threadClicked = function(spaceId, index,lastMsg){

@@ -35,16 +35,15 @@
             <div class="spaceContainer">
 <!--            Space:{{userSpace.space.id}}<br>-->
             
-            <div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread" ng-class="thread.lastMsg.messageStatus == 'UNREAD' ? 'unreadThread' : ''" id="{{'emailThread_'+userSpace.space.id+'_'+$index}}"> 
+            <div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread"> 
 <!--                 <div class="threadHeader" ng-click="threadClicked(userSpace.space.id,$index,thread.lastMsg)">-->
-                <div class="threadHeader" ng-click="threadHeaderOnClick(userSpace.space.id,$index)">
+                <div class="threadHeader" ng-click="threadHeaderOnClick(userSpace.space.uniqId,$index)">
                     <span id="senderSpan">{{thread.lastMsg.msg.from}}</span>
                     <span id="subjectSpan">{{thread.messages[0].msg.subject}}</span> 
                 </div>
-                <div class="emailThreadBody" id="{{'emailThreadBody_'+userSpace.space.id+'_'+$index}}">
-                    <div data-ng-repeat="message in thread.messages track by $index">
-    <!--                MessageStatus: {{thread.lastMsg.messageStatus}}<br>-->
-                        <div class="messageHeader" ng-click="messageHeaderOnClick(thread.lastMsg.msg.threadId,$index)">
+                <div class="emailThreadBody" id="{{'emailThreadBody_'+userSpace.space.uniqId+'_'+$index}}">
+                    <div data-ng-repeat="message in thread.messages track by $index" ng-class="message.messageStatus == 'UNREAD' ? 'unreadThread' : ''" id="{{'emailMessage_'+thread.lastMsg.msg.threadId+'_'+$index}}">
+                        <div class="messageHeader" ng-click="messageHeaderOnClick(thread.lastMsg.msg.threadId,$index,message)">
                             <span id="senderSpan">{{message.msg.from}}</span>
                             <span id="subjectSpan">{{message.msg.subject}}</span>
                             <span id="snippetSpan">&nbsp;-&nbsp;{{message.snippet}}</span>

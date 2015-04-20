@@ -183,12 +183,9 @@ webmaily.factory('GmailAPIService',function(){
             fairyVal.space = activeSpace;  
             mailcomposer.addHeader("space-fairy",fairyVal); 
             if(emailMsg.reply){
-               //mailcomposer["threadId"] = emailMsg.threadId;
-                mailcomposer.addHeader("In-Reply-To",emailMsg.inReplyTo);
-                //mailcomposer.addHeader("References",emailMsg.inReplyTo);
                 mailcomposer.setMessageOption({
                     inReplyTo:emailMsg.inReplyTo,
-                    references:emailMsg.references,
+                    references:emailMsg.references
                 });
             }
             
@@ -197,7 +194,8 @@ webmaily.factory('GmailAPIService',function(){
             var request = gapi.client.gmail.users.messages.send({
                 'userId': 'me',
                 'resource': {//Here should be resource not message!!!!!!!
-                'raw': base64EncodedEmail
+                    'raw': base64EncodedEmail,
+                    'threadId':emailMsg.threadId
                 }
             });
             request.execute(function(status){
