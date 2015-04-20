@@ -6,6 +6,7 @@ var PageTransitions = function() {
 		$iterate = $( '#iterateEffects' ),
         $goToSpace = $( '#goToSpace' ),
         $spaceOverview = $( '#spaceOverview' ),
+        $spaceSetting = $('#spaceSetting'),
 		animcursor = 1,
 		pagesCount = $pages.length,
 		current = 0,
@@ -56,11 +57,24 @@ var PageTransitions = function() {
         $spaceOverview.on( 'click', function() {
             //nextPage($(this).data('animation'));
             gotoPage(0,$(this).data('animation'));
-            $("#spaceOverview").hide();
+            //$("#spaceOverview").hide();
+            //$("#composeBtn").hide();
+           // $("#spaceSetting").show();
+            $("#spaceOverview").css('visibility','hidden');
+            $("#composeBtn").css('visibility','hidden');
+            $("#spaceSetting").css('visibility','visible');
+		} );
+        $spaceSetting.on( 'click', function() {
+            var pageno = $("#spaceSettingDiv").data("pageno");
+            gotoPage(pageno,$(this).data('animation'));
+            //$("#spaceOverview").show();
+            $("#spaceOverview").css('visibility','visible');
 		} );
         $(".spaceInOverview").on( 'click', function() {
             var animation=9;
             gotoPage($(this).data('pageno'),animation);
+            //$("#spaceSetting").hide();
+            $("#spaceSetting").css('visibility','hidden');
 		} );
         $(".spaceInOverview").hover(function() {
             $(this).children(".deleteSpace").fadeIn();

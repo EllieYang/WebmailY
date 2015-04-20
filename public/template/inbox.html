@@ -34,22 +34,84 @@
         <div data-ng-repeat="userSpace in userSpaces track by $index" class="userSpace pt-page userSpace_{{$index}} pt-page-{{$index+2}}" ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4}">
             <div class="spaceContainer">
 <!--            Space:{{userSpace.space.id}}<br>-->
-            <span class="spaceName">Space: {{userSpace.space.name}}</span><br><br>
-            <div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread" ng-class="thread.lastMsg.messageStatus == 'UNREAD' ? 'unreadThread' : ''" ng-click="threadClicked(userSpace.space.id,$index,thread.lastMsg)" id="{{'emailThread_'+userSpace.space.id+'_'+$index}}"> 
-<!--                MessageStatus: {{thread.lastMsg.messageStatus}}<br>-->
-                <span id="senderSpan">{{thread.lastMsg.msg.from}}</span>
-                <span id="subjectSpan">{{thread.lastMsg.msg.subject}}</span>
-                <span id="snippetSpan">&nbsp;-&nbsp;{{thread.lastMsg.snippet}}</span>
-                <span id="dateSpan">{{thread.lastMsg.date}}</span>
-                <br>
-                <div id="{{'emailBody_'+userSpace.space.id+'_'+$index}}" class="emailBody">
-                    {{thread.lastMsg.msg.from}}<br>
-                    to me<br><br>
-                    {{thread.lastMsg.body}}<br><br>
-                    <button id="replyBtn">reply</button>
+            
+            <div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread" ng-class="thread.lastMsg.messageStatus == 'UNREAD' ? 'unreadThread' : ''" id="{{'emailThread_'+userSpace.space.id+'_'+$index}}"> 
+<!--                 <div class="threadHeader" ng-click="threadClicked(userSpace.space.id,$index,thread.lastMsg)">-->
+                <div class="threadHeader" ng-click="threadHeaderOnClick(userSpace.space.id,$index)">
+                    <span id="senderSpan">{{thread.lastMsg.msg.from}}</span>
+                    <span id="subjectSpan">{{thread.messages[0].msg.subject}}</span> 
                 </div>
+                <div class="emailThreadBody" id="{{'emailThreadBody_'+userSpace.space.id+'_'+$index}}">
+                    <div data-ng-repeat="message in thread.messages track by $index">
+    <!--                MessageStatus: {{thread.lastMsg.messageStatus}}<br>-->
+                        <div class="messageHeader" ng-click="messageHeaderOnClick(thread.lastMsg.msg.threadId,$index)">
+                            <span id="senderSpan">{{message.msg.from}}</span>
+                            <span id="subjectSpan">{{message.msg.subject}}</span>
+                            <span id="snippetSpan">&nbsp;-&nbsp;{{message.snippet}}</span>
+                            <span id="dateSpan">{{message.date}}</span>
+                        </div>
+                        <div id="{{'emailBody_'+thread.lastMsg.msg.threadId+'_'+$index}}" class="emailBody" >
+                            <hr>
+                            {{message.msg.from}}<br>
+                            to {{message.msg.to}}<br><br>
+                            {{message.body}}<br>
+                            <hr>
+                            <div class="replyDiv">
+                                To {{message.msg.from}}<br>
+                                <textarea id='replyText{{$index}}' placeholder="Reply"></textarea>
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="col-md-1"><button type="submit" class="btn btn-primary" ng-click="replyMsg(thread,$index,userSpace.space.name)">Send</button></div>
+        <!--                                <label class="col-md-2 control-label">Attachment</label>-->
+                                        <div class="col-md-10"><button type="submit" class="btn btn-default glyphicon glyphicon-paperclip iconBtn"></button></div>
+                                        <div class="col-md-1"><button type="submit" class="btn btn-default glyphicon glyphicon-trash iconBtn"></button></div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+                
             </div>
             </div>
+            <div class="sideBar">
+                <span class="spaceName">{{userSpace.space.name}}</span><hr>
+                Expired on <br> {{userSpace.space.expiryDate}}<hr>
+                Attachments<hr>
+                Connections<hr>
+                Actions
+            </div>
+        </div>
+        <div class="pt-page pt-page-{{userSpaces.length+1}}" data-pageno="{{userSpaces.length+1}}" id="spaceSettingDiv">
+        <button class="btn btn-warning saveSetting" save-setting>Save Change</button>
+            <div data-ng-repeat="userSpace in userSpaces track by $index"  class="spaceSettingDiv">
+                <form class="form-horizontal">
+                    <div class="form-group form-group-xs">
+                        <label class="spaceName col-sm-2 control-label" ng-class="{'greenFont': $index%5==0,'orangeFont':$index%5==1,'redFont':$index%5==2,'purpleFont':$index%5==3, 'blueFont':$index%5==4}">{{userSpace.space.name}} </label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" placeholder="Type in a new name"></input>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-xs">
+                        <label class="col-sm-2 control-label">Expiry Date: </label>
+                        <div class="col-sm-3">
+                            <input type="date" class="form-control input-sm expiryDate" id='expiryDate{{$index}}' expirydate-setting value="{{userSpace.space.expiryDate}}">
+                        </div>
+                    </div>
+                    <div class="form-group form-group-xs">
+                        <label class="col-sm-2 control-label">Connections: </label>
+                        <div class="col-sm-10">
+                            <div class="checkbox" data-ng-repeat = "fairy in userSpace.space.fairyId track by $index">
+                                <label>
+                                    <input type="checkbox"> {{fairy}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+        <hr>
+            </div>
+        <button class="btn btn-warning saveSetting" save-setting>Save Change</button>
         </div>
     </div>
     

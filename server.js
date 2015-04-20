@@ -192,11 +192,8 @@ app.get('/getAttachedFairy*',function(req,res){
         }else {
             //res.end(JSON.stringify(rows)); 
             var idList = rows.map(function(x){return (x.id).toString()});
-            console.log(idList);
-            console.log(fairyArray);
             ownedFairy = intersect(idList,fairyArray);
             ownedFairy = ownedFairy[0];
-            console.log(ownedFairy);
             res.end(ownedFairy);
         }
     })

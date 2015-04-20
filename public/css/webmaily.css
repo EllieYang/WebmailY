@@ -17,7 +17,12 @@ body#webmail{
     border:none;
 }
 #spaceOverview{
-    display:none;
+    /*display:none;*/
+    visibility:hidden;
+}
+#composeBtn{
+/*    display:none;*/
+    visibility:hidden;
 }
 #content{
     margin:0 auto;
@@ -73,9 +78,11 @@ body#webmail{
     clear:both;
 }
 .userSpace .spaceContainer{
-    width:100%;
+    width:88%;
     min-height:200px;
-    margin:0 auto;
+    padding:5%;
+    height:100%;
+    overflow-y:auto;
 }
 .green{
     background: #60d7a9;
@@ -96,15 +103,32 @@ body#webmail{
     padding-top:5px;
     padding-bottom:5px;
     font-weight:100;
-    cursor:pointer;  
+}
+.threadHeader{
+    cursor:pointer; 
+    height:50px;
+    line-height:50px;
+    font-size:19px;
+}
+.spaceContainer .userSpaceThread{
+    background:rgba(255,255,255,1);
+    padding:3%;
+    box-shadow: 5px 5px 5px rgba(200,200,200,0.5);
+    margin-bottom:15px;
+    border-radius:1px;
 }
 .spaceName{
     color:#fff;
     font-weight:100;
     font-size:26px;
 }
+.sideBar .spaceName{
+    font-size:19px;
+    font-weight:lighter;
+}
 #compose{
-    display:none;
+   /* display:none;*/
+    visibility:hidden;
     position:fixed;
     bottom:0;
     right:0;
@@ -171,8 +195,31 @@ body#webmail{
 }
 .emailBody{
     display:none;
-    padding-top:20px;
     padding-bottom:20px;
+}
+.emailThreadBody{
+    display:none;
+}
+.replyDiv{
+    background:#fff;
+    margin-top:10px;
+}
+.replyDiv textarea{
+    background:#fff;
+    border-radius:0;
+    border:none;
+    margin-top:10px;
+    margin-bottom:10px;
+    width:100%;
+    height:50px;
+    display:block;
+    padding:6px 0px;
+}
+textarea:focus{
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 #compose .composeFooter{
     height:40px;
@@ -202,14 +249,14 @@ body#webmail{
     height:50px;
     cursor:pointer;
 }
-#replyBtn{
+/*#replyBtn{
     border:none;
     text-decoration:underline;
     color:#3399ff;
     cursor:pointer;
     background:#fff;
     padding:0;
-}
+}*/
 .addNewSpace{
     background:#ccc;
     padding:15px;
@@ -235,4 +282,71 @@ body#webmail{
 .subSpaceDivCon{
     padding:0;
 }
+#spaceSetting{
+    float:right;
+}
+#spaceSettingDiv{
+    overflow-y:scroll;
+    padding-top:30px;
+    padding-bottom:50px;
+}
+.spaceSettingDiv{
+    min-height:100px;
+    margin-bottom:10px;
+}
+.control-label{
+    font-weight:200;
+}
+.spaceSettingDiv .spaceName{
+    font-size:19px;
+    font-weight:bold;
+}
+
+.greenFont{
+    color: #60d7a9;
+}
+.orangeFont{
+    color: #fdc162;
+}
+.redFont{
+    color: #fd6a62;
+}
+.purpleFont{
+    color: #f68dbb;
+}
+.blueFont{
+    color: #7bb7fa;
+}
+.saveSetting{
+    float:right;
+}
+.sideBar{
+    width:12%;
+    background:rgba(0,0,0,0.3);
+    height:100%;
+    position:absolute;
+    right:0;
+    top:0;
+    padding:2%;
+    line-height:20px;
+    color:#ffffff;
+    font-size:14px;
+}
+textarea {
+   resize: none;
+}
+.iconBtn{
+    background:none;
+    border:none;
+    border-radius:none;
+    box-shadow:none;
+}
+.iconBtn:hover{
+    background:none;
+    border:none;
+}
+.messageHeader{
+    cursor:pointer;
+}
+
 

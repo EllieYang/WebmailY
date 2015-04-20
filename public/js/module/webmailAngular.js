@@ -1,10 +1,27 @@
 var webmaily = angular.module('webmaily',[]);
+/*webmaily.config(['$routeProvider','$locationProvider',
+                function($routeProvider,$locationProvider){
+                    $routeProvider.when('/',{
+                        templateUrl: 'template/inbox.html'
+                    })
+                    .when('/spaceSetting',{
+                        templateUrl: 'template/spaceSetting.html'
+                    })
+                    .otherwise({
+                        templateUrl: 'template/inbox.html'
+                    });
+                    $locationProvider.html5Mode(true);
+                }]);*/
 webmaily.directive('spaceOverview', function() {
   return {
       restrict: 'AE',
       link: function(scope, elem, attrs) {
             elem.bind('click',function(){
-                $("#spaceOverview").show();
+                //$("#spaceOverview").show();
+                //$("#composeBtn").show();
+                $("#spaceOverview").css('visibility','visible');
+                $("#composeBtn").css('visibility','visible');
+                
                 scope.activeSpaceIndex = attrs['pageno']-1;
                 $("#activeSpaceIndex").val(scope.activeSpaceIndex);
                 scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
@@ -33,14 +50,37 @@ webmaily.directive('backInbox', function() {
       restrict: 'A',
       link: function(scope, elem, attrs) {
        
-        elem.bind('click',function(){
-            console.log("clicked");
+        elem.bind('click',function(event){
+            event.stopPropagation();
+            event.preventDefault();
             scope.activeSpaceIndex = -1;
             $("#activeSpaceIndex").val(scope.activeSpaceIndex);
             scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
-            console.log(scope.activeSpace);
             scope.$apply();
           });
+    }
+  };
+});
+
+webmaily.directive('saveSetting', function() {
+  return {
+      restrict: 'A',
+      link: function(scope, elem, attrs) {
+        elem.bind('click',function(){
+            alert("change saved!");
+          });
+    }
+  };
+});
+
+webmaily.directive('expirydateSetting', function() {
+  return {
+      restrict: 'A',
+      link: function(scope, elem, attrs) {
+        elem.bind('click',function(){
+           
+        });
+          
     }
   };
 });
@@ -138,14 +178,21 @@ webmaily.factory('GmailAPIService',function(){
             mailcomposer.addHeader("email-to-space",emailMsg['space']);
             var fairyVal = {"state":false,"space":{},"attachedFairy":attachedFairy};
             if (fairySelected){
-                fairyVal.state=true;
-                  
+                fairyVal.state=true;       
             }
             fairyVal.space = activeSpace;  
-            //mailcomposer.addHeader("space-fairy",angular.toJson(fairyVal)); 
             mailcomposer.addHeader("space-fairy",fairyVal); 
+            if(emailMsg.reply){
+               //mailcomposer["threadId"] = emailMsg.threadId;
+                mailcomposer.addHeader("In-Reply-To",emailMsg.inReplyTo);
+                //mailcomposer.addHeader("References",emailMsg.inReplyTo);
+                mailcomposer.setMessageOption({
+                    inReplyTo:emailMsg.inReplyTo,
+                    references:emailMsg.references,
+                });
+            }
+            
             mailcomposer.buildMessage(function(err, emailStr){
-            //console.log(err || emailStr);
             var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
             var request = gapi.client.gmail.users.messages.send({
                 'userId': 'me',
