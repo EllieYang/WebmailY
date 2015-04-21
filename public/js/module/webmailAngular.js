@@ -1,4 +1,4 @@
-var webmaily = angular.module('webmaily',[]);
+var webmaily = angular.module('webmaily',['ngDragDrop']);
 /*webmaily.config(['$routeProvider','$locationProvider',
                 function($routeProvider,$locationProvider){
                     $routeProvider.when('/',{
@@ -16,16 +16,16 @@ webmaily.directive('spaceOverview', function() {
   return {
       restrict: 'AE',
       link: function(scope, elem, attrs) {
+            PageTransitions();
             elem.bind('click',function(){
-                //$("#spaceOverview").show();
-                //$("#composeBtn").show();
-                $("#spaceOverview").css('visibility','visible');
-                $("#composeBtn").css('visibility','visible');
-                
-                scope.activeSpaceIndex = attrs['pageno']-1;
-                $("#activeSpaceIndex").val(scope.activeSpaceIndex);
-                scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
-                scope.$apply();
+                if(!window.dragged){
+                    $("#spaceOverview").css('visibility','visible');
+                    $("#composeBtn").css('visibility','visible');
+                    scope.activeSpaceIndex = attrs['pageno']-1;
+                    $("#activeSpaceIndex").val(scope.activeSpaceIndex);
+                    scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
+                    scope.$apply();
+                }
               });
           
             var deleteBtn = elem.children(".deleteSpace");
@@ -33,6 +33,7 @@ webmaily.directive('spaceOverview', function() {
             deleteBtn.bind('click',function(event){
                 event.stopPropagation();
                 event.preventDefault();
+                
                 var confirmMsg = confirm("Are you sure to delete the space?");
                 if (confirmMsg == true) {
                     scope.removeSpace(scope.activeUser,$(this).data('spacename'));
@@ -51,8 +52,8 @@ webmaily.directive('backInbox', function() {
       link: function(scope, elem, attrs) {
        
         elem.bind('click',function(event){
-            event.stopPropagation();
-            event.preventDefault();
+            //event.stopPropagation();
+            //event.preventDefault();
             scope.activeSpaceIndex = -1;
             $("#activeSpaceIndex").val(scope.activeSpaceIndex);
             scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
@@ -80,6 +81,32 @@ webmaily.directive('expirydateSetting', function() {
         elem.bind('click',function(){
            
         });
+          
+    }
+  };
+});
+
+webmaily.directive('createNew', function() {
+  return {
+      restrict: 'A',
+      link: function(scope, elem, attrs) {
+          var newSpace = $("#newSpace");
+          var newGroup = $("#newGroup");
+          var createNewBtn = elem.find("button.createNewBtn")
+          newSpace.bind('click',function(){
+            scope.createNewBtnText = "New Space";
+            //scope.addNewSpace();
+          });
+          newGroup.bind('click',function(){
+            scope.createNewBtnText = "New Group";
+          });
+          createNewBtn.bind('click',function(){
+              if(scope.createNewBtnText == "New Space"){
+                scope.addNewSpace();
+              }else{
+                scope.addNewGroup();
+              }
+          });
           
     }
   };
@@ -157,7 +184,7 @@ webmaily.factory('GmailAPIService',function(){
         
     }    
     //Sending Messages
-    var sendMessage = function (emailMsg,activeSpace,fairySelected,emailToSpace,attachedFairy) { 
+    var sendMessage = function (emailMsg,activeSpace,fairySelected,groupSelected, attachedGroup, emailToSpace,attachedFairy) { 
         
         require(["js/lib/bundle.js"],function(boop){
             var mailcomposer = boop();
@@ -176,11 +203,17 @@ webmaily.factory('GmailAPIService',function(){
                 mailcomposer.addHeader("email-from-space","");     
             }
             mailcomposer.addHeader("email-to-space",emailMsg['space']);
-            var fairyVal = {"state":false,"space":{},"attachedFairy":attachedFairy};
+            var fairyVal = {"state":false,"space":[],"attachedFairy":attachedFairy,"group":false,"groupName":""};
             if (fairySelected){
                 fairyVal.state=true;       
             }
-            fairyVal.space = activeSpace;  
+            if(groupSelected){
+                fairyVal.space = attachedGroup.spaces; 
+                fairyVal.group = true;
+                fairyVal.groupName = attachedGroup.groupName;
+            }else{
+                fairyVal.space.push(activeSpace); 
+            }
             mailcomposer.addHeader("space-fairy",fairyVal); 
             if(emailMsg.reply){
                 mailcomposer.setMessageOption({

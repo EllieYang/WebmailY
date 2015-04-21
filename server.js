@@ -76,6 +76,7 @@ app.get('/addSpace*',function(req,res){
     var spaceId = req.query.spaceId;
     var spaceName = req.query.spaceName;
     var spaceSub="";
+    var group=req.query.groupId;
     //var fairyId = req.query.fairy;
     var level = req.query.level;
     
@@ -92,13 +93,13 @@ app.get('/addSpace*',function(req,res){
     var fairyId = req.query.fairy;
     if(fairyId !== '-1'){//
         //var fairyId = req.query.fairy;
-        console.log(fairyId);
-        var post = {id:spaceId,name:spaceName,subSpace:spaceSub,user:emailAddress,level:level,fairy:fairyId};
+        
+        var post = {id:spaceId,name:spaceName,subSpace:spaceSub,user:emailAddress,level:level,fairy:fairyId,groupId:group};
         dbconnection.query("INSERT into spaces SET ?",post,function(error,rows){
             if(error){
                 console.log("Problem with MYSQL "+ error);
             }else {
-                res.end();
+                res.end(JSON.stringify(rows));
             }
         });
         
@@ -111,20 +112,17 @@ app.get('/addSpace*',function(req,res){
                 var data = rows;
                 fairyId = data[0]['LAST_INSERT_ID()'];
                 //res.end(JSON.stringify(rows));
-                var post = {id:spaceId,name:spaceName,subSpace:spaceSub,user:emailAddress,level:level,fairy:fairyId};
+                var post = {id:spaceId,name:spaceName,subSpace:spaceSub,user:emailAddress,level:level,fairy:fairyId,groupId:group};
                 dbconnection.query("INSERT into spaces SET ?",post,function(error,rows){
                     if(error){
                         console.log("Problem with MYSQL "+ error);
                     }else {
-                        res.end();
+                        res.end(JSON.stringify(rows));
                     }
                 });
             }
         })
     }
-    
-    
-    
     
 });
 app.get('/removeSpace*',function(req,res){
@@ -159,17 +157,56 @@ app.get('/updateSpace*',function(req,res){
     })
 });
 
-app.get('/getLastId*',function(req,res){
-    var emailAddress = req.query.user;
-    var newQuery = "SELECT LAST_INSERT_ID()";
+app.get('/updateGroupVal*',function(req,res){
     
+    var groupId = req.query.option=='insert'? req.query.groupId : -1;
+    var newQuery = "UPDATE spaces SET groupId='"+groupId+"' WHERE uniqId='"+req.query.uniqId+"'";
     dbconnection.query(newQuery,function(error,rows){
         if(error){
             console.log("Problem with MYSQL "+ error);
         }else {
-            res.end(JSON.stringify(rows));
+            res.end();
         }
     })
+});
+app.get('/updateGroupTable*',function(req,res){
+     
+    dbconnection.query("SELECT spaces from groups WHERE id='"+req.query.groupId+"'",function(error,rows){
+        if(error){
+            console.log("Problem with MYSQL "+ error);
+        }else {
+            if (req.query.option=='insert'){
+                var newSpaceVal = rows[0].spaces=="" ? (req.query.uniqId) : (rows[0].spaces + ','+req.query.uniqId);
+            }else{
+                if(rows[0].spaces!==""){
+                    var spaceArray = rows[0].spaces.split(',');
+                    var removedIndex = spaceArray.indexOf(req.query.uniqId);
+                    spaceArray.splice(removedIndex,1);
+                    var newSpaceVal = spaceArray.join();
+                }
+                //var newSpaceVal = rows[0].spaces=="" ? (req.query.uniqId) : (rows[0].spaces + ','+req.query.uniqId);
+            }
+            var newQuery = "UPDATE groups SET spaces='"+newSpaceVal+"' WHERE id='"+req.query.groupId+"'";
+            dbconnection.query(newQuery,function(error,rows){
+                if(error){
+                    console.log("Problem with MYSQL "+ error);
+                }else {
+                    res.end();
+                }
+            })
+        }
+    })
+});
+
+app.get('/getLastId*',function(req,res){
+    dbconnection.query("SELECT LAST_INSERT_ID()",function(error,rows){
+            if(error){
+                console.log("Problem with MYSQL "+ error);
+            }else {
+                console.log(rows[0]['LAST_INSERT_ID()']);
+                res.end(JSON.stringify(rows[0]['LAST_INSERT_ID()']));
+            }
+        })
 });
 
 function intersect(a, b) {
@@ -190,12 +227,45 @@ app.get('/getAttachedFairy*',function(req,res){
         if(error){
             console.log("Problem with MYSQL "+ error);
         }else {
-            //res.end(JSON.stringify(rows)); 
-            var idList = rows.map(function(x){return (x.id).toString()});
-            ownedFairy = intersect(idList,fairyArray);
-            ownedFairy = ownedFairy[0];
-            res.end(ownedFairy);
+            //res.end(JSON.stringify(rows));
+            if(rows.length){
+                var idList = rows.map(function(x){return (x.id).toString()});
+                ownedFairy = intersect(idList,fairyArray);
+                ownedFairy = ownedFairy[0];
+                res.end(ownedFairy);
+            }else{
+                res.end(JSON.stringify(rows));
+            }
         }
     })
+});
+
+app.get('/getGroups*',function(req,res){
+    var emailAddress = req.query.user;
+    var newQuery = "SELECT * from groups where user='"+emailAddress+"'";
+    
+    dbconnection.query(newQuery,function(error,rows){
+        if(error){
+            console.log("Problem with MYSQL "+ error);
+        }else {
+            res.end(JSON.stringify(rows));
+        }
+    })
+});
+
+app.get('/addGroup*',function(req,res){
+    
+    var emailAddress = req.query.user;
+    var groupName = req.query.groupName;
+    var spaces = req.query.spaces;
+    
+    var post = {name:groupName,spaces:spaces,user:emailAddress};
+    dbconnection.query("INSERT into groups SET ?",post,function(error,rows){
+        if(error){
+            console.log("Problem with MYSQL "+ error);
+        }else {
+            res.end();
+        }
+    });
 });
 

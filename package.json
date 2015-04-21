@@ -16,6 +16,7 @@
     "body-parser": "^1.12.2",
     "express": "~4.11.0",
     "mailcomposer": "~0.2.12",
-    "mysql": "~2.5.0"
+    "mysql": "~2.5.0",
+    "angular-dragdrop":"~1.0.5"
   }
 }

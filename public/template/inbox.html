@@ -3,30 +3,52 @@
     <input type="number" id="activeSpaceIndex"  ng-model="activeSpaceIndex" class="ng-hide"/>
     <div id="labelContainer" class="pt-perspective row">
         <div class="pt-page pt-page-1">
-            <div space-overview data-ng-repeat="userSpace in userSpaces track by $index" class="spaceInOverview col-md-3 userSpace_{{$index}}" data-pageNo={{$index+1}} ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}">
+            <div space-overview data-ng-repeat="userSpace in userSpaces track by $index" class="spaceInOverview col-md-3 userSpace_{{$index}}" data-pageNo={{$index+1}} ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}" ng-if="userSpace.space.group==-1" jqyoui-draggable="{index: {{$index}},onStart:'spaceDragged(userSpace,$index)', onStop:'spaceDragStop(userSpace,$index)',animate:true,placeholder:false}" data-drag = "true">
                
                <div class="userSpaceThread">
                    <span class="spaceName">{{userSpace.space.name}}</span>&nbsp;
                    <span ng-class="{'ng-hide':userSpace.unreadMsgNo==0}">({{userSpace.unreadMsgNo}})</span>
-                   <div class="row" ng-class="{'ng-hide':userSpace.space.subSpace.length==0}">
+                   <!--<div class="row" ng-class="{'ng-hide':userSpace.space.subSpace.length==0}">
                         <div data-ng-repeat="subSpace in userSpace.space.subSpace" class="col-md-4 subSpaceDivCon">
                             <div class="subSpaceDiv">{{subSpace.name}}</div>
                        </div>
-                   </div>
+                   </div>-->
                </div>
-               <button ng-click="createNewSpace(userSpace.space);$event.stopPropagation();" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">New Space</button>&nbsp;&nbsp;<button ng-click="mapSpace(userSpace.space);$event.stopPropagation();" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Map Space</button>&nbsp;&nbsp;<button ng-click="" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Ignore</button>
+               <button ng-click="createNewSpace(userSpace.space,$event)" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">New Space</button>&nbsp;&nbsp;<button ng-click="mapSpace(userSpace.space);$event.stopPropagation();" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Map Space</button>&nbsp;&nbsp;<button ng-click="" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Ignore</button>
                 <button class="glyphicon glyphicon-trash deleteSpace" data-spacename="{{userSpace.space.name}}" ng-class="{'ng-hide':userSpace.type=='request'}"></button>
             </div>
-            <div class="col-md-3 addNewSpace">
+            <div data-ng-repeat="group in groups track by $index" class="col-md-3 spaceGroup" data-drop="true" jqyoui-droppable="{index: {{$index}},onDrop:'addToGroup(group)', multiple:true, onOut:'removeFromGroup(group)'}" >
+                <span class="spaceName">{{group.name}}</span>
+                <div class="row">
+                    <div data-ng-repeat="userSpace in userSpaces track by $index" class="col-md-4 subSpaceDivCon"  ng-if="belongsToGroup(userSpace,group)">
+                        <div space-overview class="spaceInOverview subSpaceDiv" ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}" data-pageNo={{$index+1}} jqyoui-draggable="{index: {{$index}},onStart:'spaceDragged(userSpace,$index)',onStop:'spaceDragStop(userSpace,$index)',animate:true,placeholder:false}" data-drag = "true">{{userSpace.space.name}}</div>
+                        
+                    </div>
+                </div> 
+                <div ng-class="{'ng-hide':group.type=='normal'}">
+                    <br><br>
+                <button class="btn btn-xs btn-warning" ng-click="createNewGroup(group,$event)">New Group</button>&nbsp;&nbsp;
+                <button class="btn btn-xs btn-warning">Map Group</button>
+                </div>
+                
+            </div>
+            <div class="col-md-3 addNewSpace bg-warning" create-new>
                 <div class="userSpaceThread">
                     <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" placeholder="Space Name" id="newSpaceName">
-                        <span class="input-group-addon" >New Space Name</span>
+                        <input type="text" class="form-control" placeholder="Name" id="newSpaceName">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{createNewBtnText }}<span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu">
+                              <li><a href="#" id="newSpace">New Space</a></li>
+                              <li><a href="#" id="newGroup">New Group</a></li>
+                            </ul>
+                            <button type="button" class="btn btn-success btn-sm createNewBtn">OK</button>
+                        </div>
                     </div>
-                    <div class="input-group">
+                    <!--<div class="input-group">
                         <textarea class="form-control custom-control" rows="3" style="resize:none" placeholder="Subspaces, separated by ;" id="newSubspaces" ></textarea>  
                         <span class="input-group-addon btn" ng-click="addNewSpace()">Done</span>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>
@@ -45,9 +67,10 @@
                     <div data-ng-repeat="message in thread.messages track by $index" ng-class="message.messageStatus == 'UNREAD' ? 'unreadThread' : ''" id="{{'emailMessage_'+thread.lastMsg.msg.threadId+'_'+$index}}">
                         <div class="messageHeader" ng-click="messageHeaderOnClick(thread.lastMsg.msg.threadId,$index,message)">
                             <span id="senderSpan">{{message.msg.from}}</span>
-                            <span id="subjectSpan">{{message.msg.subject}}</span>
-                            <span id="snippetSpan">&nbsp;-&nbsp;{{message.snippet}}</span>
-                            <span id="dateSpan">{{message.date}}</span>
+<!--                            <span id="subjectSpan">{{message.msg.subject}}</span>-->
+                            <span id="dateSpan">{{message.date}}</span><br>
+                            <span id="snippetSpan">{{message.snippet}}</span>
+                            
                         </div>
                         <div id="{{'emailBody_'+thread.lastMsg.msg.threadId+'_'+$index}}" class="emailBody" >
                             <hr>

@@ -23,7 +23,8 @@ var PageTransitions = function() {
 		animEndEventName = animEndEventNames[ Modernizr.prefixed( 'animation' ) ],
 		// support css animations
 		support = Modernizr.cssanimations;
-	
+	window.dragged = false;
+    
 	function init() {
 		$pages.each( function() {
 			var $page = $( this );
@@ -70,35 +71,30 @@ var PageTransitions = function() {
             //$("#spaceOverview").show();
             $("#spaceOverview").css('visibility','visible');
 		} );
+        
         $(".spaceInOverview").on( 'click', function() {
-            var animation=9;
+           /* var animation=9;
             gotoPage($(this).data('pageno'),animation);
             //$("#spaceSetting").hide();
-            $("#spaceSetting").css('visibility','hidden');
+            $("#spaceSetting").css('visibility','hidden');*/
+		} );
+        
+        $(".spaceInOverview").on( 'mousedown', function() {
+            window.dragged = false;
+		} );
+        $(".spaceInOverview").on( 'click', function() {
+            if(!window.dragged){
+                var animation=9;
+                gotoPage($(this).data('pageno'),animation);
+                //$("#spaceSetting").hide();
+                $("#spaceSetting").css('visibility','hidden');
+            }   
 		} );
         $(".spaceInOverview").hover(function() {
             $(this).children(".deleteSpace").fadeIn();
 		},function(){
             $(this).children(".deleteSpace").fadeOut('fast');
         });
-        //$(".deleteSpace").unbind('click');//This solves the problem where the click event is fired multiple times
-        $(".deleteSpace").on( 'click', function(event) {
-            /*event.stopPropagation();
-            event.preventDefault();
-            var confirmMsg = confirm("Are you sure to delete the space?");
-            if (confirmMsg == true) {
-                var index = $(this).parent().data('pageno')-1;
-                console.log(index);
-                //var currentUser = JSON.parse(localStorage.getItem('welcome.easymail'));
-                var currentUser = scope.activeUser;
-                currentUser.space.splice(index,1);
-                localStorage.setItem('welcome.easymail',JSON.stringify(currentUser));
-                change("spaces",currentUser.space);
-            } else {
-                
-            }
-            return false;*/
-		} );
 	}
     
     function gotoPage(pageNo, options){
