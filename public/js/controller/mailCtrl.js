@@ -329,13 +329,13 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         updateUserSpace(inboxThreads);
     }
     
-  /*  function intersect(a, b) {
+    function intersect(a, b) {
         var t;
         if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
         return a.filter(function (e) {
             if (b.indexOf(e) !== -1) return true;
         });
-    }*/
+    }
     
     function updateUserSpace(inboxThreads){
     
@@ -361,8 +361,11 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 var lastMsg = thread.messages[thread.messages.length-1];
                 var fairyList = userSpaceDataList.map(function(x){return x.fairy});
                 var elementPos = -1;
-                var attachedId = lastMsg.spaceFairy.attachedFairy;
-               
+                //var attachedId = lastMsg.spaceFairy.attachedFairy;
+                //Once receiving the attachedFairy (which might be 1,2,3), the fairy that has a match with the recipient's fairy list should be found. And this should be the fairy that the email goes into.
+                var attachedId =  intersect(lastMsg.spaceFairy.attachedFairy,fairyList);
+                attachedId = attachedId[0];
+                
                 fairyList.forEach(function(idList,index){
                     if(idList.indexOf(attachedId)!==-1){
                         elementPos = index;
@@ -377,7 +380,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                             
                             var space = lastMsg.spaceFairy.space[0];
                             space.id = 'space_request_id';
-                            var temp = {'fairyId':lastMsg.spaceFairy.attachedFairy,'id':space.id,'level':space.level,'name':space.name,'subSpace':space.subSpace,'uniqId':space.uniqId,'expiryDate':space.expiryDate,'group':-1};
+                            var temp = {'fairyId':attachedId,'id':space.id,'level':space.level,'name':space.name,'subSpace':space.subSpace,'uniqId':space.uniqId,'expiryDate':space.expiryDate,'group':-1};
                             spaceRequestList.push(temp);
                         }else{
                             var elePos = userSpaceDataList.map(function(x){return x.name}).indexOf(lastMsg.emailToSpace);
@@ -397,10 +400,9 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                         
                         lastMsg.spaceFairy.space.forEach(function(space){
                             console.log(space);
-                            //var space = lastMsg.spaceFairy.space[0];
-                            console.log(lastMsg.spaceFairy.attachedFairy);
-                            var fairyId = (space.fairyId.indexOf(lastMsg.spaceFairy.attachedFairy)!==-1)? lastMsg.spaceFairy.attachedFairy : space.fairyId[0];
-                           // if(space.fairyId.indexOf(lastMsg.spaceFairy.attachedFairy)!==-1){fairyId = }
+                            
+                            //var fairyId = (space.fairyId.indexOf(lastMsg.spaceFairy.attachedFairy)!==-1)? lastMsg.spaceFairy.attachedFairy : space.fairyId[0];
+                           var fairyId = space.fairyId[0];//If the sender can send the fairy request, this means space.fairyId[0] must belongs to the sender and this should be the one that the sender wants to share with the recipient.
                             var temp = {'fairyId':fairyId,'id':'space_request_id','level':space.level,'name':space.name,'subSpace':space.subSpace,'uniqId':'space_request_'+space.uniqId,'expiryDate':space.expiryDate,'group':newGroup.groupId};
                             spaceRequestList.push(temp);
                             newGroup.spacesData.push(temp);
@@ -508,18 +510,19 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 }
             });
             attachedGroup= {'groupName':groupName,'spaces':groupedSpaces};
-            console.log(attachedGroup);
+            
         }
-        
-        $http.get('http://0.0.0.0:9001/getAttachedFairy',{params:{user:$scope.activeUser,space:$scope.activeSpace.fairyId}}).success(function(data){
+            GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected,$scope.groupSelected,attachedGroup,$scope.email.space,$scope.activeSpace.fairyId);
+        $("#compose").hide();
+        /*$http.get('http://0.0.0.0:9001/getAttachedFairy',{params:{user:$scope.activeUser,space:$scope.activeSpace.fairyId}}).success(function(data){
             if(data){
                 var attachedFairy = data;
             }else{//Cannot make fairy request becase the attached fairy is not the user's.
                 var attachedFairy = "";
-            }
-            GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected,$scope.groupSelected,attachedGroup,$scope.email.space,attachedFairy);
+            }   
+           console.log(attachedFairy); GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected,$scope.groupSelected,attachedGroup,$scope.email.space,attachedFairy);
             $("#compose").hide();
-        });
+        });*/
     };
     
     $scope.replyMsg = function(thread,replyTextIndex,spaceName){
@@ -545,10 +548,9 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         emailMsg.references = references;
         emailMsg.reply = true;
         emailMsg.body = $("#replyText"+replyTextIndex).val();
-        console.log(emailMsg);
         $scope.activeSpaceIndex = $("#activeSpaceIndex").val();
         $scope.activeSpace = $scope.spaces[$scope.activeSpaceIndex];
-        GmailAPIService.sendMessage(emailMsg,$scope.activeSpace,false,emailMsg.space,thread.lastMsg.msg.spaceFairy.attachedFairy);
+        GmailAPIService.sendMessage(emailMsg,$scope.activeSpace,false,false,{},emailMsg.space,thread.lastMsg.msg.spaceFairy.attachedFairy);
     };
     
     $scope.close = function(){

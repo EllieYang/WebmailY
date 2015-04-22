@@ -209,17 +209,19 @@ app.get('/getLastId*',function(req,res){
         })
 });
 
-function intersect(a, b) {
+/*function intersect(a, b) {
     var t;
     if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
     return a.filter(function (e) {
         if (b.indexOf(e) !== -1) return true;
     });
+    
+    
 }
 
 app.get('/getAttachedFairy*',function(req,res){
     var emailAddress = req.query.user;
-    var fairyArray = req.query.space;
+    var fairyArray = req.query.space.split(',');
     var newQuery = "SELECT id FROM fairies WHERE owner='"+req.query.user+"'";
     var ownedFairy="";
     
@@ -238,7 +240,7 @@ app.get('/getAttachedFairy*',function(req,res){
             }
         }
     })
-});
+});*/
 
 app.get('/getGroups*',function(req,res){
     var emailAddress = req.query.user;
