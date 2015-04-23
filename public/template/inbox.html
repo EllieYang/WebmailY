@@ -14,7 +14,7 @@
                        </div>
                    </div>-->
                </div>
-               <button ng-click="createNewSpace(userSpace.space,$event)" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">New Space</button>&nbsp;&nbsp;<button ng-click="mapSpace(userSpace.space);$event.stopPropagation();" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Map Space</button>&nbsp;&nbsp;<button ng-click="" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Ignore</button>
+               <button ng-click="createNewSpace(userSpace.space,$event)" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">New Space</button>&nbsp;&nbsp;<button ng-click="mapSpace(userSpace);$event.stopPropagation();" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Map Space</button>&nbsp;&nbsp;<button ng-click="" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Ignore</button>
                 <button class="glyphicon glyphicon-trash deleteSpace" data-spacename="{{userSpace.space.name}}" ng-class="{'ng-hide':userSpace.type=='request'}"></button>
             </div>
             <div data-ng-repeat="group in groups track by $index" class="col-md-3 spaceGroup" data-drop="true" jqyoui-droppable="{index: {{$index}},onDrop:'addToGroup(group)', multiple:true, onOut:'removeFromGroup(group)'}" >

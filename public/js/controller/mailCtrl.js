@@ -17,6 +17,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.groupSelected = false;
     $scope.activeUser = "me";
     $scope.createNewBtnText = "New Space";
+    $scope.availabelSpacesToMap=[];
     $scope.allThreads = [];
     $scope.allSpaces = [];
     $scope.groups = [];
@@ -145,11 +146,12 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 });
             }
             var fairyIdArray = space.fairy.split(',');
-            var newspace = {"id":space.id,"name":space.name,"subSpace":subList,"uniqId":space.uniqId,'fairyId':fairyIdArray,'level':space.level,'expiryDate':space.expiryDate,'group':space.groupId};
+            var newspace = {"id":space.id,"name":space.name,"subSpace":subList,"uniqId":space.uniqId,'fairyId':fairyIdArray,'level':space.level,'expiryDate':space.expiryDate,'group':space.groupId,'connections':space.connections?space.connections.split(','):[]};
             //spaces.push(angular.toJson(newspace));
             spaces.push(newspace);
             
         });
+        console.log(spaces);
         return spaces;
     }
     
@@ -198,16 +200,49 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         $event.preventDefault();
     };
     
-    $scope.mapSpace = function(space){
+    $scope.mapSpace = function(userSpace){
        
+        var space = userSpace.space;
+        var sender = userSpace.threads[0].lastMsg.msg.from;
+        //console.log(userSpace.threads[0].lastMsg.msg.from);
+        //var sender =  "welcome.easymail@gmail.com";
+        $scope.availabelSpacesToMap = [];
+        var connectionsList = $scope.spaces.map(function(x){
+            if(x.id.substring(0,13)!=='space_request'){
+               // console.log(x.id);
+                return x.connections;
+            }else{
+                return [sender];
+            }
+        });
+        connectionsList.forEach(function(ele,index){
+            if(ele.length){
+                if(ele.indexOf(sender)==-1){
+                    $scope.availabelSpacesToMap.push($scope.spaces[index]);
+                }
+            }
+            if(!ele.length){
+                $scope.availabelSpacesToMap.push($scope.spaces[index]);
+            }
+            
+        });
+        console.log($scope.availabelSpacesToMap);
         var selectedSpace = {};
         var tempHTML = "Please choose a space: \n"
-        $scope.allSpaces.forEach(function(space,index){
+        /*$scope.allSpaces.forEach(function(space,index){
             tempHTML+=(index+1)+": "+space.name+"\n";
         });
         var selectedSpaceIndex = prompt(tempHTML, "1");
         if (selectedSpaceIndex != null) {
             selectedSpace = $scope.allSpaces[selectedSpaceIndex-1];
+            $scope.updateSpace(selectedSpace,space.fairyId,space);
+        }*/
+        $scope.availabelSpacesToMap.forEach(function(space,index){
+            tempHTML+=(index+1)+": "+space.name+"\n";
+        });
+        var selectedSpaceIndex = prompt(tempHTML, "1");
+        if (selectedSpaceIndex != null) {
+            selectedSpace = $scope.availabelSpacesToMap[selectedSpaceIndex-1];
             $scope.updateSpace(selectedSpace,space.fairyId,space);
         }
     };
@@ -302,12 +337,14 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     },true);
     
     $scope.$watch('email.to', function (newVal) {
+       
         $scope.ownerOfActiveSpace = false;
         if(emailList.indexOf(newVal)!==-1){
             var index = $scope.userWithSpaceData.map(function(x){return x.email}).indexOf(newVal);
             if (index!==-1){
                 $scope.recipientFairyList = $scope.userWithSpaceData[index].space.map(function(x){return x.fairy});
                 $scope.connectedFairy.connected = false;
+                
                 for(var i=0;i<$scope.recipientFairyList.length;i++){
                     var fairyStr = $scope.recipientFairyList[i];
                     var connectedFairy = intersect(fairyStr.split(','),$scope.activeSpace.fairyId);
@@ -316,12 +353,15 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                             $scope.connectedFairy.fairyId = connectedFairy[0];
                             $scope.connectedFairy.space = $scope.userWithSpaceData[index].space[i];
                             $scope.connectedFairy.connected = true;
+                           
                             break;
                         }
                 }
                 
                 if(!$scope.connectedFairy.connected){
+                   
                     $scope.ownerOfActiveSpace = $scope.fairies.map(function(x){return x.id}).indexOf(parseInt($scope.activeSpace.fairyId[0]))==-1 ? false : true;
+                    console.log($scope.ownerOfActiveSpace);
                 }
                 
             }
@@ -431,6 +471,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         if($scope.allSpaces.length){
             $scope.allSpaces.forEach(function(ele){
                 var temp = {'id':ele.uniqId,'name':ele.name,'threadsArray':[],'fairy':ele.fairyId, 'level':ele.level};
+                
                 userSpaceDataList.push(temp);
             });
         }
@@ -444,26 +485,41 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 var elementPos = -1;
                 //var attachedId = lastMsg.spaceFairy.attachedFairy;
                 //Once receiving the attachedFairy (which might be 1,2,3), the fairy that has a match with the recipient's fairy list should be found. And this should be the fairy that the email goes into.
-                var attachedId =  intersect(lastMsg.spaceFairy.attachedFairy,fairyList);
-                attachedId = attachedId[0];
+                //console.log(fairyList);
+                //console.log(lastMsg.spaceFairy.attachedFairy);
+                //var attachedId =  intersect(lastMsg.spaceFairy.attachedFairy,fairyList);
+                //attachedId = attachedId[0];
                 
+                
+                for(var i=0;i<fairyList.length;i++){
+                    var overlap = intersect(fairyList[i],lastMsg.spaceFairy.attachedFairy);
+                    
+                    if (overlap.length){//has connection
+                        elementPos = i;
+                        break;
+                    }
+                }
+               /* 
                 fairyList.forEach(function(idList,index){
                     if(idList.indexOf(attachedId)!==-1){
                         elementPos = index;
                     }
-                });
+                });*/
+                
                 if(elementPos !== -1){//has fairy connection
                     userSpaceDataList[elementPos].threadsArray.push(thread);
                 }else{//No fairy connection
                     
+                    var attachedId = lastMsg.spaceFairy.attachedFairy[0];
                     if(!lastMsg.spaceFairy.group){//No group request
                         if(lastMsg.spaceFairy.state==true){
                             
                             var space = lastMsg.spaceFairy.space[0];
                             space.id = 'space_request_id';
-                            var temp = {'fairyId':attachedId,'id':space.id,'level':space.level,'name':space.name,'subSpace':space.subSpace,'uniqId':space.uniqId,'expiryDate':space.expiryDate,'group':-1};
+                            var temp = {'fairyId':[attachedId],'id':space.id,'level':space.level,'name':space.name,'subSpace':space.subSpace,'uniqId':space.uniqId,'expiryDate':space.expiryDate,'group':-1};
                             spaceRequestList.push(temp);
                         }else{
+                            console.log(lastMsg);
                             var elePos = userSpaceDataList.map(function(x){return x.name}).indexOf(lastMsg.emailToSpace);
                             if(elePos!==-1){
                                 userSpaceDataList[elePos].threadsArray.push(thread);
@@ -508,6 +564,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         });
         
         //Deal with emails that belong to a space
+        
         spacesL0.forEach(function(space,index){
             var spaceName = space.name;
             //var messageArray = space.threadsArray;//Messages that belong to this space
@@ -521,6 +578,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                     if(thread.messages.length){
                         
                         thread.messages.forEach(function(emailMessage){
+                           
                             var newMessage = {"msg":emailMessage,"header":{},"snippet":''};
                             newMessage.snippet = emailMessage.snippet ? emailMessage.snippet : 'This message has no content';
                             if(emailMessage.labelIds.indexOf("UNREAD") !== -1){
@@ -629,9 +687,17 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         emailMsg.inReplyTo = inReplyTo;
         emailMsg.references = references;
         emailMsg.reply = true;
-        emailMsg.body = $("#replyText"+replyTextIndex).val();
+        //emailMsg.emailFromSpace = thread.lastMsg.msg.emailToSpace;
+        //emailMsg.emailToSpace= thread.lastMsg.msg.emailFromSpace;
+        //emailMsg.body = $("#replyText"+replyTextIndex).val().toString();
+        
+        //emailMsg.space = thread.lastMsg.msg.emailFromSpace.name;
         $scope.activeSpaceIndex = $("#activeSpaceIndex").val();
+        emailMsg.body = document.getElementById("replyText"+replyTextIndex).value;
         $scope.activeSpace = $scope.spaces[$scope.activeSpaceIndex];
+        emailMsg.space = thread.lastMsg.msg.emailFromSpace.name;
+        safeApply($scope,function(){});
+        console.log($scope.activeSpace);
         GmailAPIService.sendMessage(emailMsg,$scope.activeSpace,false,false,{},emailMsg.space,thread.lastMsg.msg.spaceFairy.attachedFairy);
     };
     

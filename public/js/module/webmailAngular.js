@@ -223,14 +223,14 @@ webmaily.factory('GmailAPIService',function(){
                     references:emailMsg.references
                 });
             }
-            
             mailcomposer.buildMessage(function(err, emailStr){
+            console.log(emailStr);
             var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
             var request = gapi.client.gmail.users.messages.send({
                 'userId': 'me',
                 'resource': {//Here should be resource not message!!!!!!!
                     'raw': base64EncodedEmail,
-                    'threadId':emailMsg.threadId
+                    'threadId':emailMsg.threadId,
                 }
             });
             request.execute(function(status){
