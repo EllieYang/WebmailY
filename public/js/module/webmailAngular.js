@@ -52,11 +52,13 @@ webmaily.directive('backInbox', function() {
       link: function(scope, elem, attrs) {
        
         elem.bind('click',function(event){
-            //event.stopPropagation();
+            event.stopPropagation();
             //event.preventDefault();
             scope.activeSpaceIndex = -1;
             $("#activeSpaceIndex").val(scope.activeSpaceIndex);
-            scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
+            //scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
+            scope.activeSpace = {};
+            $("#compose").hide();
             scope.$apply();
           });
     }

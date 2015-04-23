@@ -127,8 +127,7 @@ body#webmail{
     font-weight:lighter;
 }
 #compose{
-   /* display:none;*/
-    visibility:hidden;
+    display:none;
     position:fixed;
     bottom:0;
     right:0;
@@ -221,7 +220,7 @@ textarea:focus{
     -moz-box-shadow: none;
     box-shadow: none;
 }
-#compose .composeFooter{
+compose{
     height:40px;
     border-top:1px solid #ccc;
     background:#eee;
