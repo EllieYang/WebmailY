@@ -255,6 +255,30 @@ app.get('/getGroups*',function(req,res){
     })
 });
 
+app.get('/getUsers*',function(req,res){
+    var newQuery = "SELECT * from users";
+    
+    dbconnection.query(newQuery,function(error,rows){
+        if(error){
+            console.log("Problem with MYSQL "+ error);
+        }else {
+            res.end(JSON.stringify(rows));
+        }
+    })
+});
+
+app.get('/getFairies*',function(req,res){
+    var newQuery = "SELECT * from fairies";
+    
+    dbconnection.query(newQuery,function(error,rows){
+        if(error){
+            console.log("Problem with MYSQL "+ error);
+        }else {
+            res.end(JSON.stringify(rows));
+        }
+    })
+});
+
 app.get('/addGroup*',function(req,res){
     
     var emailAddress = req.query.user;

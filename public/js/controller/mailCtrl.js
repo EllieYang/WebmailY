@@ -20,14 +20,23 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.allThreads = [];
     $scope.allSpaces = [];
     $scope.groups = [];
+    $scope.users = [];
+    $scope.userWithSpaceData = [];
+    $scope.recipientFairyList = [];
+    $scope.fairies = [];
     //Id upbound
     var idUpB = 0;
     var inboxMessages = [];
+    var emailList = [];
     $scope.draggedData = {};
+    $scope.connectedFairy = {'fairyId':"",'space':{},'connected':false};
+    $scope.ownerOfActiveSpace = false;
     
     angular.element(window).bind('load', function() {
         //handleClientLoad();
         GmailAPIService.handleClientLoad();
+        $scope.getUsers();
+        $scope.getFairies();
         $timeout(function(){
             $scope.activeUser = $("#logInfo").val();
             $scope.uniIni();
@@ -41,6 +50,36 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         }
     }
     
+    $scope.getUsers = function(){
+        $http.get('http://0.0.0.0:9001/getUsers',{params:{}}).success(function(data){
+            $scope.users = data;
+            emailList = $scope.users.map(function(x){return x.email});
+            emailList.forEach(function(email){
+                var spaceData = {'email':email,'space':[]};
+                $scope.getFairyList(email);
+                $scope.userWithSpaceData.push(spaceData);
+            });
+        });
+    }
+    
+    $scope.getFairies = function(){
+        $http.get('http://0.0.0.0:9001/getFairies',{params:{}}).success(function(data){
+            $scope.fairies = data;
+            console.log($scope.fairies);
+        });
+    }
+    
+    $scope.getFairyList = function(emailAddress){
+        $http.get('http://0.0.0.0:9001/loadAllSpaces',{params:{user:emailAddress}}).success(function(data){
+            //console.log(data);
+            var index = $scope.userWithSpaceData.map(function(x){return x.email}).indexOf(emailAddress);
+            if (index!==-1){
+                $scope.userWithSpaceData[index].space = data;
+            }
+            return data;
+        });
+    }
+    
     $scope.getSpaces = function(emailAddress){
         $http.get('http://0.0.0.0:9001/loadAllSpaces',{params:{user:emailAddress}}).success(function(data){
             $scope.allSpaces = $scope.assignSpaceData(data);
@@ -52,8 +91,8 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     
     $scope.addSpace = function(emailAddress,spaceId, spaceName, subSpace,groupId){
 
-        $http.get('http://0.0.0.0:9001/addFairy',{params:{user:emailAddress}}).success(function(data){
-            //console.log(data);
+        $http.get('http://0.0.0.0:9001/addFairy',{params:{user:emailAddress}}).success(function(rows){
+            console.log(rows);
         });
          $http.get('http://0.0.0.0:9001/addSpace',{params:{user:emailAddress,spaceId:spaceId,spaceName:spaceName,subSpace:subSpace,level:0,fairy:-1,groupId:groupId}}).success(function(data){
             $scope.getSpaces(emailAddress);
@@ -257,6 +296,41 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         
     },true);
     
+    $scope.$watch('email.to', function (newVal) {
+        $scope.ownerOfActiveSpace = false;
+        if(emailList.indexOf(newVal)!==-1){
+            var index = $scope.userWithSpaceData.map(function(x){return x.email}).indexOf(newVal);
+            if (index!==-1){
+                $scope.recipientFairyList = $scope.userWithSpaceData[index].space.map(function(x){return x.fairy});
+                for(var i=0;i<$scope.recipientFairyList.length;i++){
+                    var fairyStr = $scope.recipientFairyList[i];
+                    var connectedFairy = intersect(fairyStr.split(','),$scope.activeSpace.fairyId);
+                        if(connectedFairy.length){
+                            $scope.connectedFairy.fairyId = connectedFairy[0];
+                            $scope.connectedFairy.space = $scope.userWithSpaceData[index].space[i];
+                            $scope.connectedFairy.connected = true;
+                            console.log($scope.connectedFairy);
+                            break;
+                        }
+                }
+                if(!$scope.connectedFairy.connected){
+                    $scope.ownerOfActiveSpace = $scope.fairies.map(function(x){return x.id}).indexOf(parseInt($scope.activeSpace.fairyId[0]))==-1 ? false : true;
+                }
+                
+            }
+
+        }  
+    },true);
+    
+    
+    $scope.$watch('ownerOfActiveSpace', function (newVal) {
+        if(newVal){
+            $scope.fairySelected=true;
+        }else{
+            $scope.fairySelected=false;
+        }
+    },true);
+    
     var Message = function Message(id, labelIds, threadId, snippet, body, mimeType, from, date, to, subject, MIMEVersion, contentType, emailFromSpace, emailToSpace, spaceFairy,messageID,threadData){
         this.id = id;
         this.labelIds = labelIds;
@@ -356,7 +430,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         
         var spaceRequestList = [];
         inboxThreads.forEach(function(thread){
-            console.log(thread);
+            //console.log(thread);
             if(thread.messages.length){
                 var lastMsg = thread.messages[thread.messages.length-1];
                 var fairyList = userSpaceDataList.map(function(x){return x.fairy});
@@ -488,6 +562,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         if($scope.activeSpace){
             $scope.email.space = $scope.activeSpace.name;
         }
+        $scope.fairySelected = true;
         safeApply($scope,function(){});
     };
     $scope.sendMsg = function(){
@@ -636,17 +711,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
             // Animation complete.
           });
     };
-    
-    /*$scope.spaceDragStop = function(event, ui, userSpace,index){
-        var _this = $(".userSpace_"+index);
-        $(".userSpace_"+index).animate({
-            height: (_this.height()),
-            width: (_this.width()),
-            minHeight:200
-          }, 1, function() {
-            // Animation complete.
-          });
-    };*/
     
     $scope.addToGroup = function(event, ui, group){
         $scope.updateGroupVal($scope.draggedData.space.space,group.groupId,'insert');
