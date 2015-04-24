@@ -173,14 +173,17 @@ webmaily.factory('GmailAPIService',function(){
         var req = gapi.client.gmail.users.threads.list({
             'userId':'me'
          });
-        
         req.execute(function(resp){
-            resp.result.threads.forEach(function(thread){
-                var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
-                threadResp.execute(function(response){
-                    scope["allThreads"].push(response);
-                    });
-            });
+            console.log(resp.result.threads);
+            if(resp.result.threads){
+                resp.result.threads.forEach(function(thread){
+                    var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
+                    threadResp.execute(function(response){
+                        scope["allThreads"].push(response);
+                        });
+                });
+            }
+            
         });
         scope.$apply();
         
@@ -204,6 +207,7 @@ webmaily.factory('GmailAPIService',function(){
             }else{
                 mailcomposer.addHeader("email-from-space","");     
             }
+            console.log(emailMsg['space']);
             mailcomposer.addHeader("email-to-space",emailMsg['space']);
             var fairyVal = {"state":false,"space":[],"attachedFairy":attachedFairy,"group":false,"groupName":""};
             if (fairySelected){

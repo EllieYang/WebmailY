@@ -667,7 +667,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     
     $scope.replyMsg = function(thread,replyTextIndex,spaceName){
         
-        console.log(thread);
         var threadId = thread.lastMsg.msg.threadId;
         var messageId = thread.lastMsg.msg.messageID;
         var inReplyTo = messageId;
@@ -695,9 +694,10 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         $scope.activeSpaceIndex = $("#activeSpaceIndex").val();
         emailMsg.body = document.getElementById("replyText"+replyTextIndex).value;
         $scope.activeSpace = $scope.spaces[$scope.activeSpaceIndex];
-        emailMsg.space = thread.lastMsg.msg.emailFromSpace.name;
+        console.log(thread);
+        emailMsg.space = JSON.parse(thread.lastMsg.msg.emailFromSpace).name;
+        console.log(emailMsg.space);
         safeApply($scope,function(){});
-        console.log($scope.activeSpace);
         GmailAPIService.sendMessage(emailMsg,$scope.activeSpace,false,false,{},emailMsg.space,thread.lastMsg.msg.spaceFairy.attachedFairy);
     };
     
