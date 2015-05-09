@@ -6,6 +6,8 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
+var MailComposer = require("mailcomposer").MailComposer;
+var URLSafeBase64 = require('urlsafe-base64');
 var server = app.listen(9001,'0.0.0.0',function(){
     var host = server.address().address;
     var port = server.address().port;
@@ -25,6 +27,64 @@ dbconnection.connect(function(error){
     }else{
         console.log("Connected with Database");
     }
+});
+
+app.get('/sendMessage',function(req,res){
+    var mailcomposer = new MailComposer();
+    var emailMsg = JSON.parse(req.query.emailMsg),
+        activeSpace = JSON.parse(req.query.activeSpace),
+        fairySelected = req.query.fairySelected,
+        groupSelected = req.query.groupSelected,
+        attachedGroup = JSON.parse(req.query.attachedGroup),
+        emailToSpace = req.query.emailToSpace,
+        attachedFairy = req.query.attachedFairy;
+    
+    var recipients = emailMsg['to'].split(';');
+            mailcomposer.setMessageOption({
+                from: emailMsg["from"],
+                to: recipients,
+                //to: ['frank.taylor.testing@gmail.com','alice.taylor.testing@gmail.com'],
+                subject: emailMsg["subject"],
+                body: emailMsg["body"]
+                //,html: "<b>"+emailMsg["body"]+"</b>"+"<i>From the Easymail Team</i>" 
+            });
+            if(activeSpace){
+                mailcomposer.addHeader("email-from-space",activeSpace);
+            }else{
+                mailcomposer.addHeader("email-from-space","");     
+            }
+            console.log(emailMsg['space']);
+            mailcomposer.addHeader("email-to-space",emailMsg['space']);
+            var fairyVal = {"state":false,"space":[],"attachedFairy":attachedFairy,"group":false,"groupName":""};
+            if (fairySelected){
+                fairyVal.state=true;       
+            }
+            if(groupSelected){
+                fairyVal.space = attachedGroup.spaces; 
+                fairyVal.group = true;
+                fairyVal.groupName = attachedGroup.groupName;
+            }else{
+                fairyVal.space.push(activeSpace); 
+            }
+            mailcomposer.addHeader("space-fairy",fairyVal); 
+            if(emailMsg.reply){
+                mailcomposer.setMessageOption({
+                    inReplyTo:emailMsg.inReplyTo,
+                    references:emailMsg.references
+                });
+            }
+            //Adding attchment
+            var attachment = {
+                fileName: "photo2.jpg",
+                filePath:"public/attch/photo2.jpg",
+            };
+            mailcomposer.addAttachment(attachment);
+            mailcomposer.buildMessage(function(err, emailStr){
+            console.log(emailStr);
+            //var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
+            var base64EncodedEmail = URLSafeBase64.encode(new Buffer(emailStr.trim()));
+            res.end(base64EncodedEmail);
+        });             
 });
 
 app.get('/',function(req,res){

@@ -52,7 +52,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     }
     
     $scope.getUsers = function(){
-        $http.get('http://0.0.0.0:9001/getUsers',{params:{}}).success(function(data){
+        $http.get('http://0.0.0.0:900/getUsers',{params:{}}).success(function(data){
             $scope.users = data;
             emailList = $scope.users.map(function(x){return x.email});
             emailList.forEach(function(email){
@@ -249,18 +249,67 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     
      $scope.createNewGroup = function(newGroup,$event) {
          
-         //I need to create one group and two spaces
+         //Need to create one group and two spaces
          $event.stopPropagation();
          $event.preventDefault();
-         $scope.addGroup($scope.activeUser, newGroup.name, "");
+         //$scope.addGroup($scope.activeUser, newGroup.name, "");
          $http.get('http://0.0.0.0:9001/getLastId',{params:{user:$scope.activeUser}}).success(function(data){
              if(newGroup.spacesData.length){
                 newGroup.spacesData.forEach(function(addedSpace){
-                    var spaceId = "space_"+addedSpace.id.split('_')[2];
-                    $scope.createSpace($scope.activeUser,spaceId, addedSpace.name, JSON.stringify(addedSpace.subSpace),addedSpace.fairyId,data,"withGroup");
+                    console.log(addedSpace);
+                    if(addedSpace.id.substring(0,13)=="space_request"){//this space is not connected currently
+                        var spaceId = "space_"+addedSpace.id.split('_')[2];
+                        //$scope.createSpace($scope.activeUser,spaceId, addedSpace.name, JSON.stringify(addedSpace.subSpace),addedSpace.fairyId,data,"withGroup");
+                    }else{
+                        var tempHTML = "Your group is currently connected with "+addedSpace.name + ", would you like to move this space to your new group?\n";
+                        var moveToGroup = confirm(tempHTML);
+                        if(moveToGroup == true){//update the space and the group
+                            
+                        }else{
+                            //Do nothing
+                        }
+                    }
+                    
                 });
              }
          });
+    };
+    
+    $scope.mapToGroup = function(newGroup,$event) {
+         
+         //Need to choose one group that belongs to this user and create two spaces
+        console.log(newGroup);
+        $event.stopPropagation();
+        $event.preventDefault();
+        var availableGroups = [];
+        $scope.groups.forEach(function(group){
+            if(group.type=='normal'){
+                availableGroups.push(group);
+            }
+        });
+        var tempHTML = "Please choose a group: \n"
+        console.log($scope.groups);
+        availableGroups.forEach(function(group,index){
+            tempHTML+=(index+1)+": "+group.name+"\n";
+        });
+        
+        var selectedGroupIndex = prompt(tempHTML, "1");
+        if (selectedGroupIndex != null) {
+            var selectedGroup = availableGroups[selectedGroupIndex-1];
+            if (newGroup.spacesData.length){
+                newGroup.spacesData.forEach(function(spaceData){
+                    if(spaceData.id.substring(0,13)=="space_request"){//Means this space is not connected currently
+                        var spaceId = "space_"+spaceData.id.split('_')[2];
+                        setTimeout(function(){   
+                            $scope.createSpace($scope.activeUser,spaceId, spaceData.name, JSON.stringify(spaceData.subSpace),spaceData.fairyId,selectedGroup.groupId,"withGroup");
+                         },2);
+                        
+                    }else{//Means this space has already has a connection.
+                        //Do something later.
+                    }
+                });
+            }
+        }
     };
     
     $scope.updateSpace = function(space,fairyId, spaceToBeDelete){//This function is to update the space with an added fairy
@@ -344,7 +393,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
             if (index!==-1){
                 $scope.recipientFairyList = $scope.userWithSpaceData[index].space.map(function(x){return x.fairy});
                 $scope.connectedFairy.connected = false;
-                
+                console.log($scope.activeSpace);
                 for(var i=0;i<$scope.recipientFairyList.length;i++){
                     var fairyStr = $scope.recipientFairyList[i];
                     var connectedFairy = intersect(fairyStr.split(','),$scope.activeSpace.fairyId);
@@ -483,28 +532,14 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 var lastMsg = thread.messages[thread.messages.length-1];
                 var fairyList = userSpaceDataList.map(function(x){return x.fairy});
                 var elementPos = -1;
-                //var attachedId = lastMsg.spaceFairy.attachedFairy;
-                //Once receiving the attachedFairy (which might be 1,2,3), the fairy that has a match with the recipient's fairy list should be found. And this should be the fairy that the email goes into.
-                //console.log(fairyList);
-                //console.log(lastMsg.spaceFairy.attachedFairy);
-                //var attachedId =  intersect(lastMsg.spaceFairy.attachedFairy,fairyList);
-                //attachedId = attachedId[0];
-                
-                
                 for(var i=0;i<fairyList.length;i++){
-                    var overlap = intersect(fairyList[i],lastMsg.spaceFairy.attachedFairy);
-                    
+                    console.log(lastMsg.spaceFairy.attachedFairy);
+                    var overlap = intersect(fairyList[i],lastMsg.spaceFairy.attachedFairy);   
                     if (overlap.length){//has connection
                         elementPos = i;
                         break;
                     }
                 }
-               /* 
-                fairyList.forEach(function(idList,index){
-                    if(idList.indexOf(attachedId)!==-1){
-                        elementPos = index;
-                    }
-                });*/
                 
                 if(elementPos !== -1){//has fairy connection
                     userSpaceDataList[elementPos].threadsArray.push(thread);
@@ -538,7 +573,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                         lastMsg.spaceFairy.space.forEach(function(space){
                             console.log(space);
                             
-                            //var fairyId = (space.fairyId.indexOf(lastMsg.spaceFairy.attachedFairy)!==-1)? lastMsg.spaceFairy.attachedFairy : space.fairyId[0];
                            var fairyId = space.fairyId[0];//If the sender can send the fairy request, this means space.fairyId[0] must belongs to the sender and this should be the one that the sender wants to share with the recipient.
                             var temp = {'fairyId':fairyId,'id':'space_request_id','level':space.level,'name':space.name,'subSpace':space.subSpace,'uniqId':'space_request_'+space.uniqId,'expiryDate':space.expiryDate,'group':newGroup.groupId};
                             spaceRequestList.push(temp);
@@ -652,17 +686,19 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
             attachedGroup= {'groupName':groupName,'spaces':groupedSpaces};
             
         }
-            GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected,$scope.groupSelected,attachedGroup,$scope.email.space,$scope.activeSpace.fairyId);
+      
+    $http.get('http://0.0.0.0:9001/sendMessage',{params:{
+            'emailMsg':$scope.email,
+            'activeSpace':$scope.activeSpace,
+            'fairySelected':$scope.fairySelected,
+            'groupSelected':$scope.groupSelected,
+            'attachedGroup':attachedGroup,
+            'emailToSpace':$scope.email.space,
+            'attachedFairy':$scope.activeSpace.fairyId
+        }}).success(function(data){
+            GmailAPIService.sendMessage(data,$scope.email.threadId);
+        });
         $("#compose").hide();
-        /*$http.get('http://0.0.0.0:9001/getAttachedFairy',{params:{user:$scope.activeUser,space:$scope.activeSpace.fairyId}}).success(function(data){
-            if(data){
-                var attachedFairy = data;
-            }else{//Cannot make fairy request becase the attached fairy is not the user's.
-                var attachedFairy = "";
-            }   
-           console.log(attachedFairy); GmailAPIService.sendMessage($scope.email,$scope.activeSpace,$scope.fairySelected,$scope.groupSelected,attachedGroup,$scope.email.space,attachedFairy);
-            $("#compose").hide();
-        });*/
     };
     
     $scope.replyMsg = function(thread,replyTextIndex,spaceName){

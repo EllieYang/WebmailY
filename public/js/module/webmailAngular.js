@@ -189,60 +189,19 @@ webmaily.factory('GmailAPIService',function(){
         
     }    
     //Sending Messages
-    var sendMessage = function (emailMsg,activeSpace,fairySelected,groupSelected, attachedGroup, emailToSpace,attachedFairy) { 
+    var sendMessage = function (base64EncodedEmail,threadId) { 
         
-        require(["js/lib/bundle.js"],function(boop){
-            var mailcomposer = boop();
-            var recipients = emailMsg['to'].split(';');
-            mailcomposer.setMessageOption({
-                from: emailMsg["from"],
-                to: recipients,
-                //to: ['frank.taylor.testing@gmail.com','alice.taylor.testing@gmail.com'],
-                subject: emailMsg["subject"],
-                body: emailMsg["body"]
-                //,html: "<b>"+emailMsg["body"]+"</b>"+"<i>From the Easymail Team</i>" 
-            });
-            if(activeSpace){
-                mailcomposer.addHeader("email-from-space",activeSpace);
-            }else{
-                mailcomposer.addHeader("email-from-space","");     
-            }
-            console.log(emailMsg['space']);
-            mailcomposer.addHeader("email-to-space",emailMsg['space']);
-            var fairyVal = {"state":false,"space":[],"attachedFairy":attachedFairy,"group":false,"groupName":""};
-            if (fairySelected){
-                fairyVal.state=true;       
-            }
-            if(groupSelected){
-                fairyVal.space = attachedGroup.spaces; 
-                fairyVal.group = true;
-                fairyVal.groupName = attachedGroup.groupName;
-            }else{
-                fairyVal.space.push(activeSpace); 
-            }
-            mailcomposer.addHeader("space-fairy",fairyVal); 
-            if(emailMsg.reply){
-                mailcomposer.setMessageOption({
-                    inReplyTo:emailMsg.inReplyTo,
-                    references:emailMsg.references
-                });
-            }
-            mailcomposer.buildMessage(function(err, emailStr){
-            console.log(emailStr);
-            var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
-            var request = gapi.client.gmail.users.messages.send({
+        var request = gapi.client.gmail.users.messages.send({
                 'userId': 'me',
                 'resource': {//Here should be resource not message!!!!!!!
                     'raw': base64EncodedEmail,
-                    'threadId':emailMsg.threadId,
+                    'threadId':threadId,
                 }
-            });
-            request.execute(function(status){
+        });
+        request.execute(function(status){
                 alert("Email sent!");
-            });
-        }); 
-            
-    });
+        });
+     
     };
     
     //Function Mark the message as read
