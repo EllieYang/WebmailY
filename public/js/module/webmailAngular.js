@@ -1,17 +1,5 @@
 var webmaily = angular.module('webmaily',['ngDragDrop']);
-/*webmaily.config(['$routeProvider','$locationProvider',
-                function($routeProvider,$locationProvider){
-                    $routeProvider.when('/',{
-                        templateUrl: 'template/inbox.html'
-                    })
-                    .when('/spaceSetting',{
-                        templateUrl: 'template/spaceSetting.html'
-                    })
-                    .otherwise({
-                        templateUrl: 'template/inbox.html'
-                    });
-                    $locationProvider.html5Mode(true);
-                }]);*/
+
 webmaily.directive('spaceOverview', function() {
   return {
       restrict: 'AE',
@@ -56,7 +44,6 @@ webmaily.directive('backInbox', function() {
             //event.preventDefault();
             scope.activeSpaceIndex = -1;
             $("#activeSpaceIndex").val(scope.activeSpaceIndex);
-            //scope.activeSpace = scope.spaces[scope.activeSpaceIndex];
             scope.activeSpace = {};
             $("#compose").hide();
             scope.$apply();
@@ -97,7 +84,6 @@ webmaily.directive('createNew', function() {
           var createNewBtn = elem.find("button.createNewBtn")
           newSpace.bind('click',function(){
             scope.createNewBtnText = "New Space";
-            //scope.addNewSpace();
           });
           newGroup.bind('click',function(){
             scope.createNewBtnText = "New Group";
@@ -157,8 +143,7 @@ webmaily.factory('GmailAPIService',function(){
                 'userId':'me'
             }); 
             userProfileReq.execute(function(resp){
-                //var logInfo = document.getElementById('logInfo');
-                //logInfo.innerHTML = resp.emailAddress+'<br/>';
+               
                 $("#logInfo").val(resp.emailAddress);
                 var scope = angular.element($("#controllerTag")).scope();
                 scope.getSpaces(resp.emailAddress);
@@ -168,13 +153,13 @@ webmaily.factory('GmailAPIService',function(){
     }
     
     function getAllThreads(){
-        //var allThreads=[];
+        
         var scope = angular.element($("#controllerTag")).scope();
         var req = gapi.client.gmail.users.threads.list({
             'userId':'me'
          });
         req.execute(function(resp){
-            console.log(resp.result.threads);
+            
             if(resp.result.threads){
                 resp.result.threads.forEach(function(thread){
                     var threadResp = gapi.client.gmail.users.threads.get({'userId':'me','id':thread.id});
@@ -218,12 +203,28 @@ webmaily.factory('GmailAPIService',function(){
             });
         }
     }
-
+    
+    //Get attachment
+    var getAttachment = function(messageId, attachId,filename){
+        var scope = angular.element($("#controllerTag")).scope();
+       var request = gapi.client.gmail.users.messages.attachments.get({
+                'userId': 'me',
+                'id':attachId,
+                'messageId': messageId
+            });
+            request.execute(function(attachment){
+                //document.getElementById("attachmentId").src = "data:image/jpg;base64," + attachment.data;
+                //console.log(attachment.data);
+                scope.decodeToFile(attachment.data,filename);
+            });  
+    }    
+    
     return {
       getAllThreads:getAllThreads,
       handleClientLoad:handleClientLoad,
       sendMessage:sendMessage,
-      markAsRead:markAsRead
+      markAsRead:markAsRead,
+      getAttachment:getAttachment
     };
 }
 );

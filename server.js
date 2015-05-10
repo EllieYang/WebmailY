@@ -8,6 +8,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 var MailComposer = require("mailcomposer").MailComposer;
 var URLSafeBase64 = require('urlsafe-base64');
+var fs = require("fs");
 var server = app.listen(9001,'0.0.0.0',function(){
     var host = server.address().address;
     var port = server.address().port;
@@ -37,23 +38,21 @@ app.get('/sendMessage',function(req,res){
         groupSelected = req.query.groupSelected,
         attachedGroup = JSON.parse(req.query.attachedGroup),
         emailToSpace = req.query.emailToSpace,
-        attachedFairy = req.query.attachedFairy;
-    
+        attachedFairy = req.query.attachedFairy.split(',');
+    console.log(attachedFairy);
     var recipients = emailMsg['to'].split(';');
             mailcomposer.setMessageOption({
                 from: emailMsg["from"],
                 to: recipients,
-                //to: ['frank.taylor.testing@gmail.com','alice.taylor.testing@gmail.com'],
                 subject: emailMsg["subject"],
                 body: emailMsg["body"]
-                //,html: "<b>"+emailMsg["body"]+"</b>"+"<i>From the Easymail Team</i>" 
             });
             if(activeSpace){
                 mailcomposer.addHeader("email-from-space",activeSpace);
             }else{
                 mailcomposer.addHeader("email-from-space","");     
             }
-            console.log(emailMsg['space']);
+            
             mailcomposer.addHeader("email-to-space",emailMsg['space']);
             var fairyVal = {"state":false,"space":[],"attachedFairy":attachedFairy,"group":false,"groupName":""};
             if (fairySelected){
@@ -74,34 +73,47 @@ app.get('/sendMessage',function(req,res){
                 });
             }
             //Adding attchment
-            var attachment = {
+            var attachment1 = {
                 fileName: "photo2.jpg",
                 filePath:"public/attch/photo2.jpg",
-            };
-            mailcomposer.addAttachment(attachment);
+            };  
+            var attachment2 = {
+                fileName: "nycphoto1.jpg",
+                filePath:"public/attch/nycphoto1.jpg",
+            }; 
+    
+            mailcomposer.addAttachment(attachment1);
+            mailcomposer.addAttachment(attachment2);
             mailcomposer.buildMessage(function(err, emailStr){
-            console.log(emailStr);
             //var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
             var base64EncodedEmail = URLSafeBase64.encode(new Buffer(emailStr.trim()));
             res.end(base64EncodedEmail);
         });             
 });
 
-app.get('/',function(req,res){
-    res.sendFile('index.html');
+app.get('/safeDecode',function(req,res){
+    var decoded = URLSafeBase64.decode(req.query.encoded);
+    res.end(decoded);
 });
 
-app.get('/load*',function(req,res){
-    var emailAddress = req.query.user;
-    var newQuery = "SELECT * from spaces where level=0 && user='"+emailAddress+"'";
-    
-    dbconnection.query(newQuery,function(error,rows){
-        if(error){
-            console.log("Problem with MYSQL "+ error);
-        }else {
-            res.end(JSON.stringify(rows));
+app.post('/decodeToFile',function(req,res){
+    //console.log(req);
+    var decoded = URLSafeBase64.decode(req.body.encoded);
+    fs.stat('public/attachments/'+req.body.filename, function(err, stat) {
+        if(err == null) {
+            console.log('File exists');
+        } else if(err.code == 'ENOENT') {
+            fs.writeFile ('public/attachments/'+req.body.filename,decoded);
+        } else {
+            console.log('Some other error: ', err.code);
         }
-    })
+    });
+    //fs.writeFile ('public/attachments/'+req.body.filename,decoded);
+    res.end(decoded);
+});
+
+app.get('/',function(req,res){
+    res.sendFile('index.html');
 });
 
 app.get('/loadAllSpaces*',function(req,res){
@@ -135,26 +147,13 @@ app.get('/addSpace*',function(req,res){
     var emailAddress = req.query.user;
     var spaceId = req.query.spaceId;
     var spaceName = req.query.spaceName;
-    var spaceSub="";
+   
     var group=req.query.groupId;
-    //var fairyId = req.query.fairy;
-    var level = req.query.level;
     
-    if(JSON.parse(req.query.subSpace)){
-        var subList = JSON.parse(req.query.subSpace);
-        subList.forEach(function(sub,index){
-            if(index==(subList.length-1)){
-                spaceSub += sub.name;
-            }else{
-                spaceSub += sub.name+",";
-            }
-        });
-    }
     var fairyId = req.query.fairy;
-    if(fairyId !== '-1'){//
-        //var fairyId = req.query.fairy;
+    if(fairyId !== '-1'){
         
-        var post = {id:spaceId,name:spaceName,subSpace:spaceSub,user:emailAddress,level:level,fairy:fairyId,groupId:group};
+        var post = {id:spaceId,name:spaceName,user:emailAddress,fairy:fairyId,groupId:group};
         dbconnection.query("INSERT into spaces SET ?",post,function(error,rows){
             if(error){
                 console.log("Problem with MYSQL "+ error);
@@ -171,8 +170,7 @@ app.get('/addSpace*',function(req,res){
             }else {
                 var data = rows;
                 fairyId = data[0]['LAST_INSERT_ID()'];
-                //res.end(JSON.stringify(rows));
-                var post = {id:spaceId,name:spaceName,subSpace:spaceSub,user:emailAddress,level:level,fairy:fairyId,groupId:group};
+                var post = {id:spaceId,name:spaceName,user:emailAddress,fairy:fairyId,groupId:group};
                 dbconnection.query("INSERT into spaces SET ?",post,function(error,rows){
                     if(error){
                         console.log("Problem with MYSQL "+ error);
@@ -244,7 +242,7 @@ app.get('/updateGroupTable*',function(req,res){
                     spaceArray.splice(removedIndex,1);
                     var newSpaceVal = spaceArray.join();
                 }
-                //var newSpaceVal = rows[0].spaces=="" ? (req.query.uniqId) : (rows[0].spaces + ','+req.query.uniqId);
+                
             }
             var newQuery = "UPDATE groups SET spaces='"+newSpaceVal+"' WHERE id='"+req.query.groupId+"'";
             dbconnection.query(newQuery,function(error,rows){
@@ -268,39 +266,6 @@ app.get('/getLastId*',function(req,res){
             }
         })
 });
-
-/*function intersect(a, b) {
-    var t;
-    if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
-    return a.filter(function (e) {
-        if (b.indexOf(e) !== -1) return true;
-    });
-    
-    
-}
-
-app.get('/getAttachedFairy*',function(req,res){
-    var emailAddress = req.query.user;
-    var fairyArray = req.query.space.split(',');
-    var newQuery = "SELECT id FROM fairies WHERE owner='"+req.query.user+"'";
-    var ownedFairy="";
-    
-    dbconnection.query(newQuery,function(error,rows){
-        if(error){
-            console.log("Problem with MYSQL "+ error);
-        }else {
-            //res.end(JSON.stringify(rows));
-            if(rows.length){
-                var idList = rows.map(function(x){return (x.id).toString()});
-                ownedFairy = intersect(idList,fairyArray);
-                ownedFairy = ownedFairy[0];
-                res.end(ownedFairy);
-            }else{
-                res.end(JSON.stringify(rows));
-            }
-        }
-    })
-});*/
 
 app.get('/getGroups*',function(req,res){
     var emailAddress = req.query.user;
