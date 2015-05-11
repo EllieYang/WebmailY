@@ -100,6 +100,12 @@ webmaily.directive('createNew', function() {
   };
 });
 
+webmaily.filter("sanitize", ['$sce', function($sce) {
+  return function(htmlCode){
+    return $sce.trustAsHtml(htmlCode);
+  }
+}]);
+
 webmaily.factory('GmailAPIService',function(){
 
     //Setting up Google Authorization

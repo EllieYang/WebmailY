@@ -78,9 +78,9 @@ body#webmail{
     clear:both;
 }
 .userSpace .spaceContainer{
-    width:88%;
+    width:100%;
     min-height:200px;
-    padding:5%;
+    padding:1%;
     height:100%;
     overflow-y:auto;
 }
@@ -98,6 +98,21 @@ body#webmail{
 }
 .blue{
     background: #7bb7fa;
+}
+.threadsDiv{
+    border-right:1px solid #000;
+    height:100%;
+}
+.messagesDiv{
+    border-right:1px solid #000;
+    height:100%;
+}
+.threadBlock{
+    margin-top:10px;
+    margin-bottom:10px;
+    border-bottom:1px solid #000;
+    cursor:pointer;
+    padding:3%;
 }
 .userSpaceThread{
     padding-top:5px;
@@ -190,18 +205,23 @@ body#webmail{
     font-weight:700;
 }
 .activeThread {
-    background:rgba(240,240,240,0.2);
+    background:rgba(255,255,255,0.3);
 }
 .emailBody{
-    display:none;
-    padding-bottom:20px;
+/*    display:none;*/
+    margin-bottom:10px;
+    border-radius:1px;
+    background:#fff;
+    padding:5%;
 }
 .emailThreadBody{
-    display:none;
+   display:none;
 }
+
 .replyDiv{
     background:#fff;
     margin-top:10px;
+    display:none;
 }
 .replyDiv textarea{
     background:#fff;
@@ -248,14 +268,9 @@ compose{
     height:50px;
     cursor:pointer;
 }
-/*#replyBtn{
-    border:none;
-    text-decoration:underline;
-    color:#3399ff;
+#replyBtn{
     cursor:pointer;
-    background:#fff;
-    padding:0;
-}*/
+}
 .addNewSpace{
     padding:15px;
     min-height:200px;
@@ -344,9 +359,6 @@ textarea {
 .iconBtn:hover{
     background:none;
     border:none;
-}
-.messageHeader{
-    cursor:pointer;
 }
 .spaceGroup{
     background-color:rgba(170,170,170,0.3);

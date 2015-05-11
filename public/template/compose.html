@@ -15,21 +15,13 @@
         </div>
         <div ng-if="!fairySelected">
             <span>To a public space OR type in a space name</span>
-            <!--<span data-ng-repeat="space in spaces" class="spaceList">
-            <input type="radio" ng-model="email.space" ng-value="space.name">{{space.name}}</input>
-            </span>&nbsp;&nbsp;-->
             <input type="text" ng-model="email.space" ng-value="space.name" style="width:150px" placeholder="Type in a space name"></input>
             <br><br>
         </div>
-       <!-- <div ng-hide = "!activeSpace || activeSpace=={} || activeSpace && activeSpace.name!==email.space" ng-show="activeSpace && activeSpace.name==email.space">
-            <span class="formLabel" >&nbsp;</span>
-            <input type="checkbox" ng-model="fairySelected" ng-change="updateFairySelected(fairySelected)">Send Space Fairy</input>
-            &nbsp;&nbsp;<input type="checkbox" ng-if="activeSpace.group!==-1" ng-model="groupSelected" ng-change="applyChangeGS(groupSelected)"><span ng-if="activeSpace.group!==-1">Send Group</span></input>
-            <br><br>
-        </div>-->
         <span class="formLabel">Subject:</span><input type="text" ng-model="email.subject"><br><br>
         <span class="formLabel"></span><textarea ng-model="email.body"></textarea><br>
         <br><br>
+        
         <div class="composeFooter">
             <button ng-click="sendMsg()" id="sendBtn">SEND</button>
         </div>

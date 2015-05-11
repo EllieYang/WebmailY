@@ -369,7 +369,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         }
     },true);
     
-    var Message = function Message(id, labelIds, threadId, snippet, body, mimeType, from, date, to, subject, MIMEVersion, contentType, emailFromSpace, emailToSpace, spaceFairy,messageID,threadData){
+    var Message = function Message(id, labelIds, threadId, snippet, body, mimeType, from, date, to, subject, MIMEVersion, contentType, emailFromSpace, emailToSpace, spaceFairy,messageID,threadData,attachments){
         this.id = id;
         this.labelIds = labelIds;
         this.threadId = threadId;
@@ -387,6 +387,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         this.spaceFairy = spaceFairy;
         this.messageID = messageID;
         this.threadData = threadData;
+        this.attachments = attachments;
     }
     
     function classifyThreads(allThreads){//Retrieve inbox messages
@@ -400,9 +401,10 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                     if(lastMsg.labelIds[0]=="INBOX" || lastMsg.labelIds[0]=="SENT"){
                         var newThread = {'threadData':thread,"messages":[]};
                         thread.messages.forEach(function(message){
-                            
-                             var newMsg = new Message(message.id,message.labelIds,message.threadId, message.snippet, message.payload.body, message.payload.mimeType, "","","","","","","","","","","");
+                            console.log(message);
+                             var newMsg = new Message(message.id,message.labelIds,message.threadId, message.snippet, message.payload.body, message.payload.mimeType, "","","","","","","","","","","",[]);
                             if(message.payload){
+                               
                                 message.payload.headers.forEach(function(header){
                                     if(header.name=="From"){
                                         newMsg.from = header.value;
@@ -426,12 +428,15 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                                         newMsg.messageID = header.value;
                                     }
                                 });
-                                if(message.payload.parts){
-                                    console.log(message.payload.parts);
+                                if(message.payload.parts){//has attachment
                                     message.payload.parts.forEach(function(part){
                                         if(part.filename && part.filename.length >0){
                                             var attachId = part.body.attachmentId;
                                             GmailAPIService.getAttachment(message.id,attachId,part.filename);
+                                            newMsg.attachments.push(part.filename);
+                                            
+                                        }else{
+                                            newMsg.body = part.body;
                                         }
                                     });
                                 }
@@ -568,7 +573,8 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                                 newMessage.body = data;
                             });
                             }
-        
+                           
+                            newMessage.attachments = emailMessage.attachments;
                             newMessage.date = emailMessage.date.split(" ",3).join(" ");
                             pushedThread.messages.push(newMessage);
                             
@@ -628,6 +634,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         }
         
     var fairyIdStr = $scope.activeSpace.fairyId.join();
+    
     $http.get('http://0.0.0.0:9001/sendMessage',{params:{
             'emailMsg':$scope.email,
             'activeSpace':$scope.activeSpace,
@@ -679,9 +686,10 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     };
     
     $scope.threadHeaderOnClick = function(spaceId, index){
-        
-        $("#emailThreadBody_"+spaceId+"_"+index).slideToggle("fast");
-        $("#emailThread_"+spaceId+"_"+index).toggleClass("activeThread");
+        $(".emailThreadBody").hide("fast");
+        $(".threadBlock div").removeClass("activeThread");
+        $("#emailThreadBody_"+spaceId+"_"+index).show("fast");
+        $("#emailThread"+spaceId+"_"+index).toggleClass("activeThread");
     };
     
     $scope.messageHeaderOnClick = function(threadId, index,message){

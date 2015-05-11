@@ -39,13 +39,15 @@ app.get('/sendMessage',function(req,res){
         attachedGroup = JSON.parse(req.query.attachedGroup),
         emailToSpace = req.query.emailToSpace,
         attachedFairy = req.query.attachedFairy.split(',');
-    console.log(attachedFairy);
+    
+    var messageBody = emailMsg["body"].replace(/\r?\n/g, '<br />');
     var recipients = emailMsg['to'].split(';');
             mailcomposer.setMessageOption({
                 from: emailMsg["from"],
                 to: recipients,
                 subject: emailMsg["subject"],
-                body: emailMsg["body"]
+                //body: emailMsg["body"]
+                html:messageBody
             });
             if(activeSpace){
                 mailcomposer.addHeader("email-from-space",activeSpace);
@@ -80,11 +82,16 @@ app.get('/sendMessage',function(req,res){
             var attachment2 = {
                 fileName: "nycphoto1.jpg",
                 filePath:"public/attch/nycphoto1.jpg",
-            }; 
+            };
+            var attachment3 = {
+                fileName: "guidance_frenchfood.pdf",
+                filePath:"public/attch/guidance_frenchfood.pdf",
+            };
     
             mailcomposer.addAttachment(attachment1);
-            mailcomposer.addAttachment(attachment2);
+            mailcomposer.addAttachment(attachment3);
             mailcomposer.buildMessage(function(err, emailStr){
+            console.log(emailStr);
             //var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
             var base64EncodedEmail = URLSafeBase64.encode(new Buffer(emailStr.trim()));
             res.end(base64EncodedEmail);
@@ -101,7 +108,7 @@ app.post('/decodeToFile',function(req,res){
     var decoded = URLSafeBase64.decode(req.body.encoded);
     fs.stat('public/attachments/'+req.body.filename, function(err, stat) {
         if(err == null) {
-            console.log('File exists');
+            
         } else if(err.code == 'ENOENT') {
             fs.writeFile ('public/attachments/'+req.body.filename,decoded);
         } else {

@@ -1,0 +1,38 @@
+<div data-ng-repeat="thread in userSpace.threads" class="userSpaceThread"> 
+                <div class="threadHeader" ng-click="threadHeaderOnClick(userSpace.space.uniqId,$index)">
+                    <span id="senderSpan">{{thread.lastMsg.msg.from}}</span>
+                    <span id="subjectSpan">{{thread.messages[0].msg.subject}}</span> 
+                </div>
+                <div class="emailThreadBody" id="{{'emailThreadBody_'+userSpace.space.uniqId+'_'+$index}}">
+                    <div data-ng-repeat="message in thread.messages track by $index" ng-class="message.messageStatus == 'UNREAD' ? 'unreadThread' : ''" id="{{'emailMessage_'+thread.lastMsg.msg.threadId+'_'+$index}}">
+                        <div class="messageHeader" ng-click="messageHeaderOnClick(thread.lastMsg.msg.threadId,$index,message)">
+                            <span id="senderSpan">{{message.msg.from}}</span>
+                            <span id="dateSpan">
+                                <span class="glyphicon glyphicon-paperclip"></span>&nbsp;&nbsp;
+                                {{message.date}}</span><br>
+                            <span id="snippetSpan">{{message.snippet}}</span>
+                            
+                        </div>
+                        <div id="{{'emailBody_'+thread.lastMsg.msg.threadId+'_'+$index}}" class="emailBody" >
+                            <hr>
+                            {{message.msg.from}}<br>
+                            to {{message.msg.to}}<br><br>
+                            {{message.body}}<br>
+                            <hr>
+                            <div class="replyDiv">
+                                To {{message.msg.from}}<br>
+                                <textarea id='replyText{{$index}}' placeholder="Reply"></textarea>
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="col-md-1"><button type="submit" class="btn btn-primary" ng-click="replyMsg(thread,$index,userSpace.space.name)">Send</button></div>
+        <!--                                <label class="col-md-2 control-label">Attachment</label>-->
+                                        <div class="col-md-10"><button type="submit" class="btn btn-default glyphicon glyphicon-paperclip iconBtn"></button></div>
+                                        <div class="col-md-1"><button type="submit" class="btn btn-default glyphicon glyphicon-trash iconBtn"></button></div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+                
+            </div>
