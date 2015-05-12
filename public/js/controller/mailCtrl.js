@@ -16,6 +16,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.fairyRequest = false;
     $scope.groupSelected = false;
     $scope.activeUser = "me";
+    $scope.currentUser = {};//including name, email, profile
     $scope.createNewBtnText = "New Space";
     $scope.availabelSpacesToMap=[];
     $scope.allThreads = [];
@@ -38,6 +39,9 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         $scope.getFairies();
         $timeout(function(){
             $scope.activeUser = $("#logInfo").val();
+            var userIndex = $scope.users.map(function(x){return x.email}).indexOf($scope.activeUser);
+            $scope.currentUser = $scope.users[userIndex];
+           // $("#profileImg").attr('src','profilepics/xs/30'+$scope.currentUser.profile+'.jpg');
             $scope.uniIni();
         },3000);  
     });
@@ -136,17 +140,17 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         return spaces;
     }
     
-    $scope.addNewSpace = function() {
-        var spaceNameVal = $("#newSpaceName").val();
+    $scope.addNewSpace = function(spaceName) {
+        //var spaceNameVal = $("#newSpaceName").val();
         
-        var newspace = {"id":'space_'+($scope.spaces.length+1),"name":spaceNameVal};  
+        var newspace = {"id":'space_'+($scope.spaces.length+1),"name":spaceName};  
         $scope.addSpace($scope.activeUser,newspace.id, newspace.name,-1);
     };
     
-    $scope.addNewGroup = function() {
-        var groupNameVal = $("#newSpaceName").val();
+    $scope.addNewGroup = function(groupName) {
+        //var groupNameVal = $("#newSpaceName").val();
         var spaces = "";
-        $scope.addGroup($scope.activeUser, groupNameVal, spaces);
+        $scope.addGroup($scope.activeUser, groupName, spaces);
     };
     
     $scope.createNewSpace = function(newSpace,$event) {
@@ -196,7 +200,17 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
             $scope.updateSpace(selectedSpace,space.fairyId,space);
         }
     };
-    
+    $scope.createNewClicked = function(option){
+        
+        var createNew = prompt("Please enter the name", "");
+        if (createNew != null) {
+            if(option == "newSpace"){
+            $scope.addNewSpace(createNew);
+          }else{
+            $scope.addNewGroup(createNew);
+          }
+        }
+    }
      $scope.createNewGroup = function(newGroup,$event) {
          
          //Need to create one group and two spaces

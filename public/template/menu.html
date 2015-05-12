@@ -1,8 +1,28 @@
-<div>
-    <button ng-click="composeMsg()" class="btn btn-xs btn-warning" type="button" id="composeBtn">Compose</button>
-    <button data-animation="42" id="spaceOverview" class="btn btn-xs btn-link" back-inbox>Back</button> 
+<div class="menubar">
     <input ng-model="activeUser" id="logInfo"></input>
-    <button data-animation="43" id="spaceSetting" class="btn btn-xs btn-link">Space Setting</button>
-    <div style="clear:both" ></div>
-    <hr style="margin-top:5px;margin-bottom:10px;">
+    
+    <button data-animation="42" id="spaceOverview" back-inbox><span class="glyphicon glyphicon-arrow-left" style="height:30px;line-height:30px" title="Show all spaces"></span></button> 
+    <div class="btn-group" style="float:right">
+        <button class="logInfoDropdown" data-toggle="dropdown" aria-expanded="true">
+        <img class="profileImg" src="profilepics/xs/30{{currentUser.profile}}.jpg" alt=" ">
+        </button>
+      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        <li><a href="#"><b>{{currentUser.name}}</b></a></li>
+        <li><a href="#">{{currentUser.email}}</a></li>
+      </ul>
+    </div> 
+    <div class="btn-group" style="float:right">
+        <button class="logInfoDropdown" data-toggle="dropdown" aria-expanded="true">
+            <span class="glyphicon glyphicon-th-large" style="width:30px;height:30px;line-height:30px"></span>
+        </button>
+      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        <li><a href="#" ng-click="createNewClicked('newSpace')">New Space</a></li>
+        <li><a href="#" ng-click="createNewClicked('newGroup')">New Group</a></li>
+        <li class="divider"></li>
+        <li><a data-animation="43" id="spaceSetting">Space Setting</a></li>
+      </ul>
+    </div>
+    <button ng-click="composeMsg()" id="composeBtn" title="compose"><span class="glyphicon glyphicon-pencil"></span></button>
+    <div style="clear:both" ></div> 
 </div>
+<hr style="margin-top:0px;margin-bottom:10px;">

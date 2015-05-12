@@ -1,9 +1,8 @@
 
 <div id="content">
-    <img id="attachmentId">
-    <input type="number" id="activeSpaceIndex"  ng-model="activeSpaceIndex" class="ng-hide"/>
+    
     <div id="labelContainer" class="pt-perspective row">
-        <div class="pt-page pt-page-1">
+        <div class="pt-page pt-page-1 inboxSpaces">
             <div space-overview data-ng-repeat="userSpace in userSpaces track by $index" class="spaceInOverview col-md-3 userSpace_{{$index}}" data-pageNo={{$index+1}} ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}" ng-if="userSpace.space.group==-1" jqyoui-draggable="{index: {{$index}},onStart:'spaceDragged(userSpace,$index)', onStop:'spaceDragStop(userSpace,$index)',animate:true,placeholder:false}" data-drag = "true">
                
                <div class="userSpaceThread">
@@ -28,21 +27,6 @@
                 <button class="btn btn-xs btn-warning" ng-click="mapToGroup(group,$event)">Map Group</button>
                 </div>
                 
-            </div>
-            <div class="col-md-3 addNewSpace bg-warning" create-new>
-                <div class="userSpaceThread">
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" placeholder="Name" id="newSpaceName">
-                        <div class="input-group-btn">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{createNewBtnText }}<span class="caret"></span></button>
-                            <ul class="dropdown-menu" role="menu">
-                              <li><a href="#" id="newSpace">New Space</a></li>
-                              <li><a href="#" id="newGroup">New Group</a></li>
-                            </ul>
-                            <button type="button" class="btn btn-success btn-sm createNewBtn">OK</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
          
@@ -95,6 +79,7 @@
         <button class="btn btn-warning saveSetting" save-setting>Save Change</button>
         </div>
     </div>
-    
+   <img id="attachmentId">
+    <input type="number" id="activeSpaceIndex"  ng-model="activeSpaceIndex" class="ng-hide"/> 
 </div>
 

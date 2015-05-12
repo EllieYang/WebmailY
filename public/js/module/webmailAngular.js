@@ -75,31 +75,6 @@ webmaily.directive('expirydateSetting', function() {
   };
 });
 
-webmaily.directive('createNew', function() {
-  return {
-      restrict: 'A',
-      link: function(scope, elem, attrs) {
-          var newSpace = $("#newSpace");
-          var newGroup = $("#newGroup");
-          var createNewBtn = elem.find("button.createNewBtn")
-          newSpace.bind('click',function(){
-            scope.createNewBtnText = "New Space";
-          });
-          newGroup.bind('click',function(){
-            scope.createNewBtnText = "New Group";
-          });
-          createNewBtn.bind('click',function(){
-              if(scope.createNewBtnText == "New Space"){
-                scope.addNewSpace();
-              }else{
-                scope.addNewGroup();
-              }
-          });
-          
-    }
-  };
-});
-
 webmaily.filter("sanitize", ['$sce', function($sce) {
   return function(htmlCode){
     return $sce.trustAsHtml(htmlCode);
@@ -126,10 +101,12 @@ webmaily.factory('GmailAPIService',function(){
     function handleAuthResult(authResult) {
         var authorizeButton = document.getElementById('authorize-button');
         if (authResult && !authResult.error) {
-          authorizeButton.style.visibility = 'hidden';
+          //authorizeButton.style.visibility = 'hidden';
+            authorizeButton.style.display = 'none';
           makeApiCall();
         } else {
-          authorizeButton.style.visibility = '';
+          //authorizeButton.style.visibility = '';
+            authorizeButton.style.display = 'block';
           authorizeButton.onclick = handleAuthClick;
         }
     }
