@@ -1,7 +1,9 @@
 <div data-ng-repeat="thread in userSpace.threads" class="threadBlock"> 
     <div ng-click="threadHeaderOnClick(userSpace.space.uniqId,$index)" id="{{'emailThread'+userSpace.space.uniqId+'_'+$index}}">
+        <div><img src="profilepics/xs/30male01.jpg" class="profileIcon">&nbsp;<img src="profilepics/xs/30male02.jpg" class="profileIcon"></div>
+        <br>
         <span id="subjectSpan">{{thread.messages[0].msg.subject}}</span> <br>
-        <span id="senderSpan">{{thread.lastMsg.msg.from}}</span><br>
+<!--        <span id="senderSpan">{{thread.lastMsg.msg.from}}</span><br>-->
         <span id="senderSpan">{{thread.lastMsg.snippet}}</span>
     </div>
 </div>

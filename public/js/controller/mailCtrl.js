@@ -53,6 +53,18 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         }
     }
     
+    $scope.findProfile = function(pathVal, size, emailAddress){
+        var userIndex = $scope.users.map(function(x){return x.email}).indexOf(emailAddress);
+        var imgName = $scope.users[userIndex].profile;
+        var fullName = 'profilepics/'+ pathVal + "/" + size + imgName + ".jpg";
+        return fullName;
+    }
+    
+     $scope.findName = function(emailAddress){
+        var userIndex = $scope.users.map(function(x){return x.email}).indexOf(emailAddress);
+        return $scope.users[userIndex].name;
+    }
+    
     $scope.getUsers = function(){
         
         $http.get('http://0.0.0.0:9001/getUsers',{params:{}}).success(function(data){

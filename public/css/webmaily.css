@@ -75,7 +75,7 @@ body#webmail{
 #content{
     margin:0 auto;
     width:100%;
-    height:1000px;
+    height:1021px;
 }
 #content span.labelDiv{
     border:1px solid #666;
@@ -237,13 +237,18 @@ body#webmail{
 }
 #senderSpan{
     display:inline-block;
-    width:300px;
 }
 #snippetSpan{
     color:#999999;  
 }
 #dateSpan{
    float:right;
+}
+.profileIcon{
+    border-radius:50%;
+}
+.profileInsideMsg{
+    border-radius:50%;
 }
 .unreadThread #senderSpan{
     font-weight:700;
@@ -259,10 +264,14 @@ body#webmail{
 }
 .emailBody{
 /*    display:none;*/
-    margin-bottom:10px;
     border-radius:1px;
     background:#fff;
-    padding:5%;
+    padding:3% 2%;
+    border-bottom:1px solid #ccc;
+}
+.emailBodyContent{
+    padding-left:35px;
+    padding-top:10px;
 }
 .emailThreadBody{
    display:none;
