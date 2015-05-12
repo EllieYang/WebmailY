@@ -215,7 +215,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.createNewClicked = function(option){
         
         var createNew = prompt("Please enter the name", "");
-        if (createNew != null) {
+        if (createNew !== "") {
             if(option == "newSpace"){
             $scope.addNewSpace(createNew);
           }else{
@@ -713,13 +713,20 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     
     $scope.threadHeaderOnClick = function(spaceId, index){
         $(".emailThreadBody").hide("fast");
-        $(".threadBlock div").removeClass("activeThread");
+        $(".replyMini").show();
+        $(".replyDiv").hide();
+        $(".threadBlock").removeClass("activeThread");
         $("#emailThreadBody_"+spaceId+"_"+index).show("fast");
         $("#emailThread"+spaceId+"_"+index).toggleClass("activeThread");
     };
     
-    $scope.messageHeaderOnClick = function(threadId, index,message){
-        $("#emailBody_"+threadId+"_"+index).toggle("fast");
+    $scope.cancelReply = function(threadId, index,message){
+        $("#emailBody_"+threadId+"_"+index).toggle();
+        $(".replyMini").show();
+    };
+     $scope.replyClicked = function(threadId, index,message){
+        $(".replyMini").hide();
+        $("#emailBody_"+threadId+"_"+index).toggle();
         if($("#emailMessage_"+threadId+"_"+index).hasClass("unreadThread")){
             $("#emailMessage_"+threadId+"_"+index).removeClass("unreadThread");
             GmailAPIService.markAsRead(message);
@@ -808,4 +815,5 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         safeApply($scope,function(){});
         $scope.groupSelected = value;
     }
+
 }]);
