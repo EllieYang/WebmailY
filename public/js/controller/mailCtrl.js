@@ -32,6 +32,8 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.draggedData = {};
     $scope.connectedFairy = {'fairyId':"",'space':{},'connected':false};
     $scope.ownerOfActiveSpace = false;
+    $scope.attaches = [];
+    $scope.currentPreview;
     
     angular.element(window).bind('load', function() {
         $scope.getUsers();
@@ -51,6 +53,32 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
           $("#expiryDate"+i).datepicker({ minDate: 1});
             $("#replyText"+i).autogrow();
         }
+    }
+    
+    $scope.openPreview = function(userSpace){
+        $scope.attaches = userSpace.attaches;
+        $scope.currentPreview = $scope.attaches[0];
+        safeApply($scope,function(){});
+        $("#previewGallery").fadeIn();
+    }
+    $scope.closePreview = function(){
+        $("#previewGallery").fadeOut();
+    }
+    $scope.nextPreview = function(){
+        var currentIndex = $scope.attaches.indexOf($scope.currentPreview);
+        currentIndex++;
+        if(currentIndex==$scope.attaches.length){
+            currentIndex=0;
+        }
+        $scope.currentPreview = $scope.attaches[currentIndex];
+    }
+    $scope.prevPreview = function(){
+        var currentIndex = $scope.attaches.indexOf($scope.currentPreview);
+        currentIndex--;
+        if(currentIndex<0){
+            currentIndex=$scope.attaches.length-1;
+        }
+        $scope.currentPreview = $scope.attaches[currentIndex];
     }
     
     $scope.findProfile = function(pathVal, size, emailAddress){
@@ -326,6 +354,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 userSpace.space = space;
                 userSpace.threads = [];
                 userSpace.unreadMsgNo = 0;
+                userSpace.attaches = [];
                 if(space.id.substring(0,13)=='space_request'){
                     
                     userSpace.type="request";
@@ -578,6 +607,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
             $scope.userSpaces[index]["threads"]=[];
             if(threadsArray.length){
                 var unreadMsgNo = 0;
+                $scope.userSpaces[index].attaches = [];
                 threadsArray.forEach(function(thread){
                     var pushedThread = {};
                     pushedThread.messages = [];
@@ -601,6 +631,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                             }
                            
                             newMessage.attachments = emailMessage.attachments;
+                            $scope.userSpaces[index].attaches = $scope.userSpaces[index].attaches.concat(emailMessage.attachments);
                             newMessage.date = emailMessage.date.split(" ",3).join(" ");
                             pushedThread.messages.push(newMessage);
                             

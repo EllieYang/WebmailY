@@ -82,4 +82,21 @@
    <img id="attachmentId">
     <input type="number" id="activeSpaceIndex"  ng-model="activeSpaceIndex" class="ng-hide"/> 
 </div>
+<div id="previewGallery">
+    <button type="button" class="btn btn-lg iconBtn" style="float:right;color:#fff" ng-click="closePreview()">
+      &#10006;
+    </button>
+    <div style="clear:both;height:10px;"></div>
+        <button type="button" class="btn btn-lg iconBtn" style="color:#fff;position:fixed;left:70px;top:350px;" ng-click="prevPreview()">
+           &#10094; 
+        </button>
+        <button type="button" class="btn btn-lg iconBtn" style="color:#fff;position:fixed;right:70px;top:350px;" ng-click="nextPreview()">
+          &#10095;
+        </button>
+
+    <div class="previewContent">
+        <img ng-if="currentPreview.split('.')[1]=='jpg'" src="attachments/{{currentPreview}}" alt="{{currentPreview}}">
+        <object ng-if="currentPreview.split('.')[1]=='pdf'" class="previewPDF" data="attachments/{{currentPreview}}">{{currentPreview}}</object>
+    </div>
+</div>
 

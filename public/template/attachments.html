@@ -1,3 +1,7 @@
+<button type="button" class="btn btn-default btn-sm iconBtn" style="float:right" ng-click="openPreview(userSpace)">
+  <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Preview Gallery
+</button>
+<div style="clear:both"><hr></div>
 <div data-ng-repeat="thread in userSpace.threads track by $index" class="row attchRow"> 
     <div data-ng-repeat="message in thread.messages track by $index"> 
          <div ng-if="message.attachments.length" >
