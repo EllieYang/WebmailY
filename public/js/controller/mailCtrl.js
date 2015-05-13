@@ -427,7 +427,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                     if(lastMsg.labelIds[0]=="INBOX" || lastMsg.labelIds[0]=="SENT"){
                         var newThread = {'threadData':thread,"messages":[]};
                         thread.messages.forEach(function(message){
-                            console.log(message);
+                            
                              var newMsg = new Message(message.id,message.labelIds,message.threadId, message.snippet, message.payload.body, message.payload.mimeType, "","","","","","","","","","","",[]);
                             if(message.payload){
                                

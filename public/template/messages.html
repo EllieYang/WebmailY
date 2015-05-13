@@ -39,11 +39,27 @@
                     <br>
                     <div ng-bind-html="message.body | sanitize"></div>
    
-                    <div ng-if="message.attachments.length">
+                    <div ng-if="message.attachments.length" class="row">
                         <hr>
-                        Attachments:<br>
-                        <div data-ng-repeat="attch in message.attachments track by $index">
-                        {{attch}}
+                        <div data-ng-repeat="attch in message.attachments track by $index" class="col-md-4">
+                            <div>
+                             <img ng-if="attch.split('.')[1]=='pdf'" src="images/pdf-icon.png" class="attchicon-sm" alt="PDF file">
+                             <img ng-if="attch.split('.')[1]=='jpg'" src="attachments/{{attch}}" class="attchicon-sm" alt="{{attch}}">
+                            </div>
+                          <div class="caption">
+<!--                             <h3>Thumbnail label</h3>-->
+                              <br>
+                             <p title="{{attch}}">{{attch}}</p>
+                            <!-- <p>
+                                <a href="#" class="btn btn-primary" role="button">
+                                   Button
+                                </a> 
+                                <a href="#" class="btn btn-default" role="button">
+                                   Button
+                                </a>
+                             </p>-->
+                          </div>
+                       
                         </div>
                     </div>
                 </div> 
