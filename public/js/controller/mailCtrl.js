@@ -55,12 +55,38 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         }
     }
     
+    $scope.toggleAttach = function(userSpace){
+        if($(".messagesDiv").hasClass('col-md-6')){
+            $(".toggledDiv").hide();
+            $(".messagesDiv").removeClass("col-md-6");
+            $(".messagesDiv").addClass("col-md-8");
+            $(".attachmentsDiv").removeClass("col-md-3");
+            $(".attachmentsDiv").addClass("col-md-1");
+            
+        }else{
+            $(".messagesDiv").removeClass("col-md-8");
+            $(".messagesDiv").addClass("col-md-6");
+            $(".attachmentsDiv").removeClass("col-md-1");
+            $(".attachmentsDiv").addClass("col-md-3");
+            $(".toggledDiv").fadeIn();
+        }
+        
+    }
+    
     $scope.openPreview = function(userSpace){
         $scope.attaches = userSpace.attaches;
         $scope.currentPreview = $scope.attaches[0];
         safeApply($scope,function(){});
         $("#previewGallery").fadeIn();
     }
+    $scope.openPreviewFile = function(userSpace,attach){
+        $scope.attaches = userSpace.attaches;
+        var indexOfCurrent = userSpace.attaches.indexOf(attach);
+        $scope.currentPreview = $scope.attaches[indexOfCurrent];
+        safeApply($scope,function(){});
+        $("#previewGallery").fadeIn();
+    }
+    
     $scope.closePreview = function(){
         $("#previewGallery").fadeOut();
     }

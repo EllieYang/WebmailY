@@ -34,8 +34,9 @@
             <div class="spaceContainer row">
                 
             <div class='col-md-3 threadsDiv' data-ng-include="'template/threads.html'"></div>
-            <div class='col-md-6 messagesDiv' data-ng-include="'template/messages.html'"></div>
-            <div class='col-md-3 attachmentsDiv' data-ng-include="'template/attachments.html'"></div>
+            <div class='col-md-6 messagesDiv' data-ng-include="'template/messages.html'" ng-if="userSpace.attaches.length!==0"></div>
+            <div class='col-md-9 messagesDiv' data-ng-include="'template/messages.html'" ng-if="userSpace.attaches.length==0"></div>
+            <div class='col-md-3 attachmentsDiv' data-ng-include="'template/attachments.html'" ng-if="userSpace.attaches.length!==0"></div>
            <!-- <div data-ng-include="'template/ori.html'"></div>-->
                 
             </div>

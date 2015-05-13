@@ -1,6 +1,16 @@
-<button type="button" class="btn btn-default btn-sm iconBtn" style="float:right" ng-click="openPreview(userSpace)">
-  <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Preview Gallery
-</button>
+<span class="btn-group btn-group" style="float:right;">
+    <button class="logInfoDropdown" data-toggle="dropdown" aria-expanded="true">
+    <span id="replyBtn" class="glyphicon glyphicon-menu-hamburger"></span>
+    </button>
+  <ul class="dropdown-menu dropdown-menu-right" role="menu">
+      <li><a href="#" ng-click="openPreview(userSpace)">Preview</a></li>
+      <li><a href="#" ng-click="toggleAttach(userSpace)">Toggle Attachment</a></li>
+  </ul>
+</span>
+<div class="toggledDiv">
+<!--<button type="button" class="btn btn-default btn-sm iconBtn" style="float:right" ng-click="openPreview(userSpace)">
+  <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+</button>-->
 <div style="clear:both"><hr></div>
 <div data-ng-repeat="thread in userSpace.threads track by $index" class="row attchRow"> 
     <div data-ng-repeat="message in thread.messages track by $index"> 
@@ -19,16 +29,16 @@
                         </div>
                         <div class="col-md-7">
                             <div class="sender">
-                                <b>{{attch}}</b><a href="attachments/{{attch}}" target="_blank"><span class="glyphicon glyphicon-download-alt"></span></a><br>
+                                <b>{{attch}}</b>&nbsp;<span ng-click="openPreviewFile(userSpace,attch)" style="cursor:pointer"><u>Preview</u></span><br>
                                 From:&nbsp;{{findName(message.msg.from)}}<br>
                                 On:&nbsp;{{message.date}}<br>
-                                Subject:&nbsp;{{message.msg.subject}}
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-11">
                         <hr>
+                        <div><b>{{message.msg.subject}}</b></div>
                         <div ng-bind-html="message.body | sanitize" class="attchContext"></div>
                         </div>
                     </div>
@@ -38,4 +48,5 @@
              </div>
         </div>
     </div>
+</div>
 </div>
