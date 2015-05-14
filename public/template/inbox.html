@@ -17,7 +17,7 @@
                 <span class="spaceName">{{group.name}}</span>
                 <div class="row">
                     <div data-ng-repeat="userSpace in userSpaces track by $index" class="col-md-4 subSpaceDivCon"  ng-if="belongsToGroup(userSpace,group)">
-                        <div space-overview class="spaceInOverview subSpaceDiv" ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}" data-pageNo={{$index+1}} jqyoui-draggable="{index: {{$index}},onStart:'spaceDragged(userSpace,$index)',onStop:'spaceDragStop(userSpace,$index)',animate:true,placeholder:false}" data-drag = "true">{{userSpace.space.name}}</div>
+                        <div space-overview class="spaceInOverview subSpaceDiv" ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}" data-pageNo={{$index+1}} jqyoui-draggable="{index: {{$index}},onStart:'spaceDragged(userSpace,$index)',onStop:'spaceDragStop(userSpace,$index)',animate:true,placeholder:false}" data-drag = "true">{{userSpace.space.name}}&nbsp;<span ng-class="{'ng-hide':userSpace.unreadMsgNo==0}">({{userSpace.unreadMsgNo}})</span></div>
                         
                     </div>
                 </div> 

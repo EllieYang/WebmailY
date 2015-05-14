@@ -201,6 +201,13 @@ body#webmail{
     border-bottom:1px solid #ccc;
     cursor:pointer;
     width:100%;
+    color:#333;
+}
+.unreadIcon{
+    position:absolute;
+    left:5px;
+    top:15px;
+    color:red;
 }
 .emailDetail{
     font-size:12px;
@@ -297,6 +304,9 @@ body#webmail{
     font-weight:700;
 }
 .unreadThread #subjectSpan{
+    font-weight:700;
+}
+.unreadThread .dateSpan{
     font-weight:700;
 }
 .unreadThread #dateSpan{

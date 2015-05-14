@@ -8,9 +8,6 @@
   </ul>
 </span>
 <div class="toggledDiv">
-<!--<button type="button" class="btn btn-default btn-sm iconBtn" style="float:right" ng-click="openPreview(userSpace)">
-  <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-</button>-->
 <div style="clear:both"><hr></div>
 <div data-ng-repeat="thread in userSpace.threads track by $index" class="row attchRow"> 
     <div data-ng-repeat="message in thread.messages track by $index"> 
@@ -29,7 +26,8 @@
                         </div>
                         <div class="col-md-7">
                             <div class="sender">
-                                <b>{{attch}}</b>&nbsp;<span ng-click="openPreviewFile(userSpace,attch)" style="cursor:pointer"><u>Preview</u></span><br>
+                                <b>{{attch}}</b><br>
+                                <span ng-click="openPreviewFile(userSpace,attch)" style="cursor:pointer"><u>Preview</u></span><br>
                                 From:&nbsp;{{findName(message.msg.from)}}<br>
                                 On:&nbsp;{{message.date}}<br>
                             </div>
@@ -38,7 +36,7 @@
                     <div class="row">
                         <div class="col-md-11">
                         <hr>
-                        <div><b>{{message.msg.subject}}</b></div>
+                        <div><em>Subject:&nbsp;{{message.msg.subject}}</em></div>
                         <div ng-bind-html="message.body | sanitize" class="attchContext"></div>
                         </div>
                     </div>

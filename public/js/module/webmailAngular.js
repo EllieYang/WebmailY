@@ -173,8 +173,8 @@ webmaily.factory('GmailAPIService',function(){
     };
     
     //Function Mark the message as read
-    var markAsRead = function(message){
-        message.messageStatus = "READ";
+    var markAsRead = function(thread){
+        /*message.messageStatus = "READ";
         if(message.msg.labelIds.indexOf("UNREAD")!==-1){
             var request = gapi.client.gmail.users.messages.modify({
                 'userId': 'me',
@@ -184,7 +184,25 @@ webmaily.factory('GmailAPIService',function(){
             request.execute(function(status){
                 console.log("marked as read");
             });
+        }*/
+        var unreadMsgNo = 0;
+        if(thread.messages.length){
+            thread.messages.forEach(function(message){
+                //message.messageStatus = "READ";
+                if(message.msg.labelIds.indexOf("UNREAD")!==-1){
+                    unreadMsgNo++;
+                    var request = gapi.client.gmail.users.messages.modify({
+                        'userId': 'me',
+                        'id':message.msg.id,
+                        'removeLabelIds': ['UNREAD']
+                    });
+                    request.execute(function(status){
+                        console.log("marked as read");
+                    });
+                }
+            });
         }
+        return unreadMsgNo;
     }
     
     //Get attachment

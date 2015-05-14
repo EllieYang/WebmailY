@@ -1,7 +1,7 @@
 <div data-ng-repeat="thread in userSpace.threads"> 
 
     <div class="emailThreadBody" id="{{'emailThreadBody_'+userSpace.space.uniqId+'_'+$index}}">
-        <div data-ng-repeat="message in thread.messages track by $index" ng-class="message.messageStatus == 'UNREAD' ? 'unreadThread' : ''" id="{{'emailMessage_'+thread.lastMsg.msg.threadId+'_'+$index}}">
+        <div data-ng-repeat="message in thread.messages track by $index" id="{{'emailMessage_'+thread.lastMsg.msg.threadId+'_'+$index}}" ng-class="message.messageStatus == 'UNREAD' ? 'unreadThread' : ''">
             <div  class="emailBody row">
                 <div class="col-md-1">
                     <img ng-src="{{findProfile('sm','50', message.msg.from)}}" class="profileInsideMsg">
@@ -28,7 +28,7 @@
                       </ul>
                     </span> 
                     
-                    <span class="btn-group" style="float:right">
+                    <span class="btn-group dateSpan" style="float:right">
                         <button class="logInfoDropdown" data-toggle="dropdown" aria-expanded="true">
                         <span ng-if="message.attachments.length" class="glyphicon glyphicon-paperclip"></span>&nbsp;&nbsp;
                         {{message.date}}&nbsp;&nbsp;
@@ -37,7 +37,7 @@
                     
                     <br>
                     <br>
-                    <div ng-bind-html="message.body | sanitize"></div>
+                    <div ng-bind-html="message.body | sanitize" class="bodyDiv"></div>
    
                     <div ng-if="message.attachments.length" class="row">
                         <hr>

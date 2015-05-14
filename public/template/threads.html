@@ -1,6 +1,6 @@
-<div data-ng-repeat="thread in userSpace.threads" class="threadBlock" id="{{'emailThread'+userSpace.space.uniqId+'_'+$index}}"> 
-    <div ng-click="threadHeaderOnClick(userSpace.space.uniqId,$index)" >
-        <span id="senderSpan"><b>{{findName(thread.lastMsg.msg.from)}}</b></span>
+<div data-ng-repeat="thread in userSpace.threads" class="threadBlock" id="{{'emailThread'+userSpace.space.uniqId+'_'+$index}}" ng-class="thread.lastMsg.messageStatus == 'UNREAD' ? 'unreadThread' : ''"> 
+    <div ng-click="threadHeaderOnClick(userSpace.space.uniqId,$index,thread,userSpace)" >
+        <span id="senderSpan">{{findName(thread.lastMsg.msg.from)}}</span>
         <span id="dateSpan">{{thread.lastMsg.date}}</span>
         <br>
         <span id="subjectSpan">{{thread.messages[0].msg.subject}}</span><br>

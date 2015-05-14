@@ -768,13 +768,29 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         $("#compose").hide();   
     };
     
-    $scope.threadHeaderOnClick = function(spaceId, index){
+    $scope.threadHeaderOnClick = function(spaceId, index,thread,userSpace){
         $(".emailThreadBody").hide("fast");
         $(".replyMini").show();
         $(".replyDiv").hide();
         $(".threadBlock").removeClass("activeThread");
         $("#emailThreadBody_"+spaceId+"_"+index).show("fast");
         $("#emailThread"+spaceId+"_"+index).toggleClass("activeThread");
+        if($("#emailThread"+spaceId+"_"+index).hasClass("unreadThread")){
+            $("#emailThread"+spaceId+"_"+index).removeClass("unreadThread");
+            var unreadMsgNo = GmailAPIService.markAsRead(thread);
+            userSpace.unreadMsgNo = userSpace.unreadMsgNo - unreadMsgNo;
+            setTimeout(function(){
+                if(thread.messages.length){
+                    thread.messages.forEach(function(message,msgIndex){
+                        message.messageStatus = "READ";
+                        if($("#emailMessage_"+thread.lastMsg.msg.threadId+"_"+msgIndex).hasClass("unreadThread")){
+                            $("#emailMessage_"+thread.lastMsg.msg.threadId+"_"+msgIndex).removeClass("unreadThread");
+                        }
+                    });
+                }
+            },1500);
+            safeApply($scope,function(){});
+        }
     };
     
     $scope.cancelReply = function(threadId, index,message){
@@ -784,10 +800,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
      $scope.replyClicked = function(threadId, index,message){
         $(".replyMini").hide();
         $("#emailBody_"+threadId+"_"+index).toggle();
-        if($("#emailMessage_"+threadId+"_"+index).hasClass("unreadThread")){
-            $("#emailMessage_"+threadId+"_"+index).removeClass("unreadThread");
-            GmailAPIService.markAsRead(message);
-        }
+        
     };
     
     $scope.updateFairySelected = function(fairySelected){
