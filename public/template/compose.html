@@ -20,11 +20,19 @@
         </div>
         <span class="formLabel">Subject:</span><input type="text" ng-model="email.subject"><br><br>
         <span class="formLabel"></span><textarea ng-model="email.body"></textarea><br>
-        <br><br>
-        
+        <br>
+        <div data-ng-repeat="attachedFile in email.attached track by $index">
+            <span class="glyphicon glyphicon-picture" ng-if="attachedFile.split('.')[1]=='jpg'"></span>
+            <span class="glyphicon glyphicon-file" ng-if="attachedFile.split('.')[1]=='pdf'"></span>
+            &nbsp;{{attachedFile}}&nbsp;&nbsp;<button type="button" style="color:#666;" class="btn btn-sm iconBtn" ng-click="removeAttached(attachedFile)">
+      x
+    </button><br>
+        </div>
         <div class="composeFooter">
-            <button ng-click="sendMsg()" id="sendBtn">SEND</button>
+            <button ng-click="sendMsg()" id="sendBtn">SEND</button> &nbsp;
+            <span class="btn btn-lg btn-file">
+            <span class="glyphicon glyphicon-paperclip"></span> <input type="file" multiple onchange="angular.element(this).scope().emailAttachChanged(this)">
+        </span>
         </div>
      </form>
-
 </div>

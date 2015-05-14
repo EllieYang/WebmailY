@@ -10,6 +10,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.email.subject = "New Message";
     $scope.email.space = "Space Name";
     $scope.email.body = "Type to write the email body";
+    $scope.email.attached = [];
     $scope.activeSpaceIndex = -1;
     $scope.activeSpace = {};
     $scope.fairySelected = false;
@@ -411,6 +412,20 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         
     },true);
     
+    $scope.emailAttachChanged = function(ele){
+        console.log(ele.files.length);
+        $scope.email.attached=[];
+        for(var i=0;i<ele.files.length;i++){
+            $scope.email.attached.push(ele.files[i].name);
+        }
+        safeApply($scope,function(){});
+        console.log($scope.email.attached);
+    }
+    $scope.removeAttached = function(removedItem){
+        var removedIndex = $scope.email.attached.indexOf(removedItem);
+        $scope.email.attached.splice(removedIndex,1);
+        safeApply($scope,function(){});
+    }
     $scope.$watch('email.to', function (newVal) {
        
         $scope.ownerOfActiveSpace = false;

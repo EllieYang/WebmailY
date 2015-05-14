@@ -74,7 +74,7 @@ app.get('/sendMessage',function(req,res){
                     references:emailMsg.references
                 });
             }
-            //Adding attchment
+            /*//Adding attchment
             var attachment1 = {
                 fileName: "photo2.jpg",
                 filePath:"public/attch/photo2.jpg",
@@ -89,9 +89,21 @@ app.get('/sendMessage',function(req,res){
             };
     
             mailcomposer.addAttachment(attachment1);
-            mailcomposer.addAttachment(attachment3);
+            mailcomposer.addAttachment(attachment3);*/
+    
+            console.log(emailMsg.attached);  
+            if(emailMsg.attached.length){
+                emailMsg.attached.forEach(function(attachedFile){
+                    var attachment = {
+                        fileName: attachedFile,
+                        filePath:"public/attch/"+attachedFile,
+                    };
+                    mailcomposer.addAttachment(attachment);
+                });
+            }
+    
             mailcomposer.buildMessage(function(err, emailStr){
-            console.log(emailStr);
+            //console.log(emailStr);
             //var base64EncodedEmail = btoa(emailStr).replace(/\+/g, '-').replace(/\//g, '_');
             var base64EncodedEmail = URLSafeBase64.encode(new Buffer(emailStr.trim()));
             res.end(base64EncodedEmail);
