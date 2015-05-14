@@ -3,7 +3,7 @@
     <div class="emailThreadBody" id="{{'emailThreadBody_'+userSpace.space.uniqId+'_'+$index}}">
         <div data-ng-repeat="message in thread.messages track by $index" id="{{'emailMessage_'+thread.lastMsg.msg.threadId+'_'+$index}}" ng-class="message.messageStatus == 'UNREAD' ? 'unreadThread' : ''">
             <div  class="emailBody row">
-                <div class="col-md-1">
+                <div class="col-md-1 profileInsideMsgCon" >
                     <img ng-src="{{findProfile('sm','50', message.msg.from)}}" class="profileInsideMsg">
                 </div>
                 <div class="col-md-11 emailBodyContent">
@@ -34,14 +34,12 @@
                         {{message.date}}&nbsp;&nbsp;
                         </button>
                     </span>
-                    
-                    <br>
                     <br>
                     <div ng-bind-html="message.body | sanitize" class="bodyDiv"></div>
    
                     <div ng-if="message.attachments.length" class="row">
                         <hr>
-                        <div data-ng-repeat="attch in message.attachments track by $index" class="col-md-4">
+                        <div data-ng-repeat="attch in message.attachments track by $index" class="col-md-4" ng-click="openPreviewFile(userSpace,attch)" style="cursor:pointer">
                             <div>
                              <img ng-if="attch.split('.')[1]=='pdf'" src="images/pdf-icon.png" class="attchicon-sm" alt="PDF file">
                              <img ng-if="attch.split('.')[1]=='jpg'" src="attachments/{{attch}}" class="attchicon-sm" alt="{{attch}}">

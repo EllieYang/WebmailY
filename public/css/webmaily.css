@@ -9,6 +9,7 @@ body#webmail{
     padding-left:30px;
     padding-right:30px;
     padding-top:15px;
+    padding-bottom:15px;
 }
 .row{
     margin-left:0;
@@ -127,12 +128,12 @@ body#webmail{
 }
 .userSpace .spaceContainer{
     width:100%;
-    min-height:200px;
     padding:1%;
     padding-top:0;
     padding-bottom:0;
-    height:100%;
+    min-height:100%;
     overflow-y:auto;
+
 }
 .green{
     background: #60d7a9;
@@ -150,6 +151,7 @@ body#webmail{
     background: #7bb7fa;
 }
 .threadsDiv{
+    min-height:650px;
     height:100%;
     padding:0;
     margin:0;
@@ -157,6 +159,7 @@ body#webmail{
     border-radius:5px;
 }
 .attachmentsDiv{
+    min-height:650px;
     height:100%;
     padding:2%;
     padding-top:2%;
@@ -197,6 +200,8 @@ body#webmail{
 }
 .threadBlock{
     padding:7%;
+    padding-top:5%;
+    padding-bottom:5%;
     margin:0;
     border-bottom:1px solid #ccc;
     cursor:pointer;
@@ -288,8 +293,13 @@ body#webmail{
 #senderSpan{
     display:inline-block;
 }
-#snippetSpan{
+.snippetSpan{
     color:#999;  
+    white-space: nowrap;
+	overflow: hidden;
+    text-overflow:ellipsis;
+    width:100%;
+    margin-bottom:0;
 }
 #dateSpan{
    float:right;
@@ -299,6 +309,9 @@ body#webmail{
 }
 .profileInsideMsg{
     border-radius:50%;
+}
+.profileInsideMsgCon{
+    padding-top:5px;
 }
 .unreadThread #senderSpan{
     font-weight:700;
@@ -324,7 +337,11 @@ body#webmail{
     
     background:#fff;
     padding:3% 2%;
+    padding-bottom:2%;
     border-bottom:1px solid #ccc;
+}
+.bodyDiv{
+    margin-top:10px;
 }
 .emailBodyContent{
     padding-left:35px;
@@ -419,13 +436,11 @@ compose{
 }
 .subSpaceDiv{
     min-height:50px;
-    padding-top:15px;
-    padding-left:15px;
-    padding-bottom:0px;
-    padding-right:0px;
+    padding:7px 3px 3px 7px;
     color:#fff;
 /*    background-color:rgba(0,0,0,0.1);*/
-    margin-right:5px;
+    font-size:12px;
+    margin-right:1px;
 }
 .subSpaceDivCon{
     padding:0;
@@ -530,8 +545,21 @@ textarea {
     border:none;
 }
 .spaceGroup{
-    background-color:rgba(170,170,170,0.3);
     min-height:200px;
     padding:15px;
+    border:1px solid #eee;
+    border-left:0;
+}
+.spaceGroup .spaceName{
+    color:#666;
+}
+.spaceName::after{
+    margin-bottom:3px;
+}
+.noMsgDiv{
+    padding:10%;
+    font-size:26px;
+    text-align:center;
+    color:#666;
 }
 

@@ -56,18 +56,21 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     }
     
     $scope.toggleAttach = function(userSpace){
-        if($(".messagesDiv").hasClass('col-md-6')){
+        var userSpaceIndex = $scope.userSpaces.indexOf(userSpace);
+        var messagesDiv = $(".userSpace_"+userSpaceIndex+" .messagesDiv");
+        var attachmentsDiv = $(".userSpace_"+userSpaceIndex+" .attachmentsDiv");
+        if(messagesDiv.hasClass('col-md-9')){
             $(".toggledDiv").hide();
-            $(".messagesDiv").removeClass("col-md-6");
-            $(".messagesDiv").addClass("col-md-8");
-            $(".attachmentsDiv").removeClass("col-md-3");
-            $(".attachmentsDiv").addClass("col-md-1");
+            messagesDiv.removeClass("col-md-9");
+            messagesDiv.addClass("col-md-11");
+            attachmentsDiv.removeClass("col-md-3");
+            attachmentsDiv.addClass("col-md-1");
             
         }else{
-            $(".messagesDiv").removeClass("col-md-8");
-            $(".messagesDiv").addClass("col-md-6");
-            $(".attachmentsDiv").removeClass("col-md-1");
-            $(".attachmentsDiv").addClass("col-md-3");
+            messagesDiv.removeClass("col-md-11");
+            messagesDiv.addClass("col-md-9");
+            attachmentsDiv.removeClass("col-md-1");
+            attachmentsDiv.addClass("col-md-3");
             $(".toggledDiv").fadeIn();
         }
         
@@ -769,11 +772,11 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     };
     
     $scope.threadHeaderOnClick = function(spaceId, index,thread,userSpace){
-        $(".emailThreadBody").hide("fast");
+        $(".emailThreadBody").hide();
         $(".replyMini").show();
         $(".replyDiv").hide();
         $(".threadBlock").removeClass("activeThread");
-        $("#emailThreadBody_"+spaceId+"_"+index).show("fast");
+        $("#emailThreadBody_"+spaceId+"_"+index).show();
         $("#emailThread"+spaceId+"_"+index).toggleClass("activeThread");
         if($("#emailThread"+spaceId+"_"+index).hasClass("unreadThread")){
             $("#emailThread"+spaceId+"_"+index).removeClass("unreadThread");

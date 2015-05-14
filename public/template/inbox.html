@@ -7,7 +7,7 @@
                
                <div class="userSpaceThread">
                    <span class="spaceName">{{userSpace.space.name}}</span>&nbsp;
-                   <span ng-class="{'ng-hide':userSpace.unreadMsgNo==0}">({{userSpace.unreadMsgNo}})</span>
+                   <span ng-class="{'ng-hide':userSpace.unreadMsgNo==0}">(<b>{{userSpace.unreadMsgNo}}</b>)</span>
                </div>
                <button ng-click="createNewSpace(userSpace.space,$event)" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">New Space</button>&nbsp;&nbsp;<button ng-click="mapSpace(userSpace);$event.stopPropagation();" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Map Space</button>&nbsp;&nbsp;<button ng-click="" ng-class="{'ng-hide':userSpace.type=='normal'}" class="btn btn-xs btn-warning">Ignore</button>
                 <button class="glyphicon glyphicon-trash deleteSpace" data-spacename="{{userSpace.space.name}}" ng-class="{'ng-hide':userSpace.type=='request'}"></button>
@@ -17,7 +17,7 @@
                 <span class="spaceName">{{group.name}}</span>
                 <div class="row">
                     <div data-ng-repeat="userSpace in userSpaces track by $index" class="col-md-4 subSpaceDivCon"  ng-if="belongsToGroup(userSpace,group)">
-                        <div space-overview class="spaceInOverview subSpaceDiv" ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}" data-pageNo={{$index+1}} jqyoui-draggable="{index: {{$index}},onStart:'spaceDragged(userSpace,$index)',onStop:'spaceDragStop(userSpace,$index)',animate:true,placeholder:false}" data-drag = "true">{{userSpace.space.name}}&nbsp;<span ng-class="{'ng-hide':userSpace.unreadMsgNo==0}">({{userSpace.unreadMsgNo}})</span></div>
+                        <div space-overview class="spaceInOverview subSpaceDiv" ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4,'fairyRequest':userSpace.type=='request'}" data-pageNo={{$index+1}} jqyoui-draggable="{index: {{$index}},onStart:'spaceDragged(userSpace,$index)',onStop:'spaceDragStop(userSpace,$index)',animate:true,placeholder:false}" data-drag = "true">{{userSpace.space.name}}&nbsp;<span ng-class="{'ng-hide':userSpace.unreadMsgNo==0}">(<b>{{userSpace.unreadMsgNo}}</b>)</span></div>
                         
                     </div>
                 </div> 
@@ -31,14 +31,17 @@
         </div>
          
         <div data-ng-repeat="userSpace in userSpaces track by $index" class="userSpace pt-page userSpace_{{$index}} pt-page-{{$index+2}}" ng-class="{'green': $index%5==0,'orange':$index%5==1,'red':$index%5==2,'purple':$index%5==3, 'blue':$index%5==4}">
+            <div ng-if="userSpace.threads.length==0" class="noMsgDiv">No message&nbsp;&#9786;</div> 
             <div class="spaceContainer row">
-                
-            <div class='col-md-3 threadsDiv' data-ng-include="'template/threads.html'"></div>
-            <div class='col-md-6 messagesDiv' data-ng-include="'template/messages.html'" ng-if="userSpace.attaches.length!==0"></div>
-            <div class='col-md-9 messagesDiv' data-ng-include="'template/messages.html'" ng-if="userSpace.attaches.length==0"></div>
-            <div class='col-md-3 attachmentsDiv' data-ng-include="'template/attachments.html'" ng-if="userSpace.attaches.length!==0"></div>
+            <div class='col-md-3 threadsDiv' data-ng-include="'template/threads.html'" ng-if="userSpace.threads.length!==0"></div>
+            <div class="col-md-9 row" style="padding:0">
+                <div class='col-md-9 messagesDiv' data-ng-include="'template/messages.html'" ng-if="userSpace.attaches.length!==0"></div>
+                <div class='col-md-12 messagesDiv' data-ng-include="'template/messages.html'" ng-if="userSpace.attaches.length==0"></div>
+                <div class='col-md-3 attachmentsDiv' data-ng-include="'template/attachments.html'" ng-if="userSpace.attaches.length!==0"></div>
+            </div>
+            
            <!-- <div data-ng-include="'template/ori.html'"></div>-->
-                
+            
             </div>
             <!--<div class="sideBar">
                 <span class="spaceName">{{userSpace.space.name}}</span><hr>
