@@ -546,15 +546,6 @@ textarea {
 }
 .spaceGroup{
     min-height:200px;
-    padding:15px;
-    border:1px solid #eee;
-    border-left:0;
-}
-.spaceGroup .spaceName{
-    color:#666;
-}
-.spaceName::after{
-    margin-bottom:3px;
 }
 .noMsgDiv{
     padding:10%;

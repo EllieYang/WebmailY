@@ -134,7 +134,12 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         emailList = $scope.users.map(function(x){return x.email});
             emailList.forEach(function(email){
                 var spaceData = {'email':email,'space':[]};
+                $http.get('http://0.0.0.0:9001/loadAllSpaces',{params:{user:email}}).success(function(data){
+                if(data.length){
+                    spaceData.space = data; 
+                }
                 $scope.userWithSpaceData.push(spaceData); 
+                });   
             });
     },true);
     
@@ -146,14 +151,15 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     
     $scope.getSpaces = function(emailAddress){
         $http.get('http://0.0.0.0:9001/loadAllSpaces',{params:{user:emailAddress}}).success(function(data){
-            
-            $scope.spaces = $scope.assignSpaceData(data);
-            if($scope.activeUser!=="me"){
-                if($scope.userWithSpaceData.length){
-                    var index = $scope.userWithSpaceData.map(function(x){return x.email}).indexOf($scope.activeUser);
-                    $scope.userWithSpaceData[index].space = data;
+            if(data.length){
+                $scope.spaces = $scope.assignSpaceData(data);
+                if($scope.activeUser!=="me"){
+                    if($scope.userWithSpaceData.length){
+                        var index = $scope.userWithSpaceData.map(function(x){return x.email}).indexOf($scope.activeUser);
+                        $scope.userWithSpaceData[index].space = data;
+                    }
+                    $scope.getFairies();
                 }
-                $scope.getFairies();
             }
         });
     }
@@ -226,7 +232,6 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.createNewSpace = function(newSpace,$event) {
         
         newSpace.id = "space_"+idUpB;
-       
         $scope.createSpace($scope.activeUser,newSpace.id, newSpace.name,newSpace.fairyId,-1,"withOutGroup");
         $event.stopPropagation();
         $event.preventDefault();
@@ -413,13 +418,13 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     },true);
     
     $scope.emailAttachChanged = function(ele){
-        console.log(ele.files.length);
+        
         $scope.email.attached=[];
         for(var i=0;i<ele.files.length;i++){
             $scope.email.attached.push(ele.files[i].name);
         }
         safeApply($scope,function(){});
-        console.log($scope.email.attached);
+       
     }
     $scope.removeAttached = function(removedItem){
         var removedIndex = $scope.email.attached.indexOf(removedItem);
@@ -432,12 +437,14 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         if(emailList.indexOf(newVal)!==-1){
             var index = $scope.userWithSpaceData.map(function(x){return x.email}).indexOf(newVal);
             if (index!==-1){
+               
                 $scope.recipientFairyList = $scope.userWithSpaceData[index].space.map(function(x){return x.fairy});
+               
                 $scope.connectedFairy.connected = false;
-                
                 for(var i=0;i<$scope.recipientFairyList.length;i++){
                     var fairyStr = $scope.recipientFairyList[i];
                     var connectedFairy = intersect(fairyStr.split(','),$scope.activeSpace.fairyId);
+                   
                         if(connectedFairy.length){
                             
                             $scope.connectedFairy.fairyId = connectedFairy[0];
@@ -527,15 +534,22 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                                         newMsg.messageID = header.value;
                                     }
                                 });
-                                if(message.payload.parts){//has attachment
+                               
+                                if(message.payload.parts){
+                                    
                                     message.payload.parts.forEach(function(part){
                                         if(part.filename && part.filename.length >0){
                                             var attachId = part.body.attachmentId;
                                             GmailAPIService.getAttachment(message.id,attachId,part.filename);
                                             newMsg.attachments.push(part.filename);
                                             
-                                        }else{
-                                            newMsg.body = part.body;
+                                        }else{//Retrieve body data
+
+                                            if(part.parts){
+                                                newMsg.body = part.parts[1].body;//text/html
+                                            }else{
+                                                newMsg.body = part.body;//text/html
+                                            }
                                         }
                                     });
                                 }
@@ -583,12 +597,12 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
            
             if(thread.messages.length){
                 var lastMsg = thread.messages[thread.messages.length-1];
-                
                 var fairyList = userSpaceDataList.map(function(x){return x.fairy});
                 var elementPos = -1;
+                
                 for(var i=0;i<fairyList.length;i++){
-                   
-                    var overlap = intersect(fairyList[i],lastMsg.spaceFairy.attachedFairy);   
+                  
+                    var overlap = intersect(fairyList[i],lastMsg.spaceFairy.attachedFairy.toString().split(','));   
                     if (overlap.length){//has connection
                         elementPos = i;
                         break;
@@ -598,8 +612,8 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 if(elementPos !== -1){//has fairy connection
                     userSpaceDataList[elementPos].threadsArray.push(thread);
                 }else{//No fairy connection
-                    
-                    var attachedId = lastMsg.spaceFairy.attachedFairy[0];
+                    //var attachedId = lastMsg.spaceFairy.attachedFairy;
+                    var attachedId = lastMsg.spaceFairy.attachedFairy.toString().split(',')[0];
                     if(!lastMsg.spaceFairy.group){//No group request
                         if(lastMsg.spaceFairy.state==true){
                             

@@ -34,11 +34,11 @@ app.get('/sendMessage',function(req,res){
     var mailcomposer = new MailComposer();
     var emailMsg = JSON.parse(req.query.emailMsg),
         activeSpace = JSON.parse(req.query.activeSpace),
-        fairySelected = req.query.fairySelected,
-        groupSelected = req.query.groupSelected,
+        fairySelected = JSON.parse(req.query.fairySelected),
+        groupSelected = JSON.parse(req.query.groupSelected),
         attachedGroup = JSON.parse(req.query.attachedGroup),
         emailToSpace = req.query.emailToSpace,
-        attachedFairy = req.query.attachedFairy.split(',');
+        attachedFairy = JSON.parse(req.query.attachedFairy.split(','));
     
     var messageBody = emailMsg["body"].replace(/\r?\n/g, '<br />');
     var recipients = emailMsg['to'].split(';');
@@ -61,6 +61,7 @@ app.get('/sendMessage',function(req,res){
                 fairyVal.state=true;       
             }
             if(groupSelected){
+                console.log("please don't come here");
                 fairyVal.space = attachedGroup.spaces; 
                 fairyVal.group = true;
                 fairyVal.groupName = attachedGroup.groupName;
