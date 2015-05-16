@@ -92,7 +92,6 @@ app.get('/sendMessage',function(req,res){
             mailcomposer.addAttachment(attachment1);
             mailcomposer.addAttachment(attachment3);*/
     
-            console.log(emailMsg.attached);  
             if(emailMsg.attached.length){
                 emailMsg.attached.forEach(function(attachedFile){
                     var attachment = {

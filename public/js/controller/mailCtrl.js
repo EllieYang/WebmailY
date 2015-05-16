@@ -785,6 +785,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         emailMsg.inReplyTo = inReplyTo;
         emailMsg.references = references;
         emailMsg.reply = true;
+        emailMsg.attached = $scope.email.attached;
         
         $scope.activeSpaceIndex = $("#activeSpaceIndex").val();
         emailMsg.body = document.getElementById("replyText"+replyTextIndex).value;
@@ -792,8 +793,21 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         
         emailMsg.space = JSON.parse(thread.lastMsg.msg.emailFromSpace).name;
         
-        safeApply($scope,function(){});
-        GmailAPIService.sendMessage(emailMsg,$scope.activeSpace,false,false,{},emailMsg.space,thread.lastMsg.msg.spaceFairy.attachedFairy);
+        /*safeApply($scope,function(){});
+        GmailAPIService.sendMessage(emailMsg,$scope.activeSpace,false,false,{},emailMsg.space,thread.lastMsg.msg.spaceFairy.attachedFairy);*/
+        
+        
+        $http.get('http://0.0.0.0:9001/sendMessage',{params:{
+            'emailMsg':emailMsg,
+            'activeSpace':$scope.activeSpace,
+            'fairySelected':false,
+            'groupSelected':false,
+            'attachedGroup':{},
+            'emailToSpace':emailMsg.space,
+            'attachedFairy':thread.lastMsg.msg.spaceFairy.attachedFairy
+        }}).success(function(data){
+            GmailAPIService.sendMessage(data,emailMsg.threadId);
+        });
     };
     
     $scope.close = function(){

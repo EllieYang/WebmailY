@@ -39,7 +39,7 @@
    
                     <div ng-if="message.attachments.length" class="row">
                         <hr>
-                        <div data-ng-repeat="attch in message.attachments track by $index" class="col-md-4" ng-click="openPreviewFile(userSpace,attch)" style="cursor:pointer">
+                        <div data-ng-repeat="attch in message.attachments track by $index" class="col-md-4" ng-click="openPreviewFile(userSpace,attch)" style="cursor:pointer;padding-left:0">
                             <div>
                              <img ng-if="attch.split('.')[1]=='pdf'" src="images/pdf-icon.png" class="attchicon-sm" alt="PDF file">
                              <img ng-if="attch.split('.')[1]=='jpg'" src="attachments/{{attch}}" class="attchicon-sm" alt="{{attch}}">
@@ -77,11 +77,23 @@
                 </div>
                  <div class="col-md-11 emailBodyContent">
                      To: {{findName(message.msg.from)}}&nbsp;{{'<'+message.msg.from+'>'}}<br>
-                    <textarea id='replyText{{$index}}' placeholder="Reply"></textarea>
+                    <textarea id='replyText{{$index}}' placeholder="Reply"></textarea><br>
+                     <div data-ng-repeat="attachedFile in email.attached track by $index">
+            <span class="glyphicon glyphicon-picture" ng-if="attachedFile.split('.')[1]=='jpg'"></span>
+            <span class="glyphicon glyphicon-file" ng-if="attachedFile.split('.')[1]=='pdf'"></span>
+            &nbsp;{{attachedFile}}&nbsp;&nbsp;<button type="button" style="color:#666;" class="btn btn-sm iconBtn" ng-click="removeAttached(attachedFile)">
+      x
+    </button><br>
+        </div>
                     <form class="form-horizontal">
                         <div class="form-group">
+                            
+                            
                             <button type="submit" class="replyBtn" ng-click="replyMsg(thread,$index,userSpace.space.name)">Send</button>
                             <button type="submit" class="replyBtn cancelReplyBtn" ng-click="cancelReply(thread.lastMsg.msg.threadId,$index,message)">Cancel</button>&nbsp;&nbsp;&nbsp;
+                            <span class="btn-file" style="float:right;margin-right:10px">
+                                <span class="glyphicon glyphicon-paperclip"></span> <input type="file" multiple onchange="angular.element(this).scope().emailAttachChanged(this)">
+                            </span>
                                 
                         </div>
                     </form>
