@@ -9,7 +9,10 @@
 </span>
 <div class="toggledDiv">
 <div style="clear:both"><hr></div>
-<div data-ng-repeat="thread in userSpace.threads track by $index" class="row attchRow"> 
+    <div class="row">
+    
+    
+<div data-ng-repeat="thread in userSpace.threads track by $index" class="attchRow"> 
     <div data-ng-repeat="message in thread.messages track by $index"> 
          <div ng-if="message.attachments.length" >
             <div data-ng-repeat="attch in message.attachments track by $index" class="col-md-6 attch-col">
@@ -47,4 +50,5 @@
         </div>
     </div>
 </div>
+        </div>
 </div>

@@ -41,12 +41,10 @@
                         <hr>
                         <div data-ng-repeat="attch in message.attachments track by $index" class="col-md-4" ng-click="openPreviewFile(userSpace,attch)" style="cursor:pointer;padding-left:0">
                             <div>
-                             <img ng-if="attch.split('.')[1]=='pdf'" src="images/pdf-icon.png" class="attchicon-sm" alt="PDF file">
-                             <img ng-if="attch.split('.')[1]=='jpg'" src="attachments/{{attch}}" class="attchicon-sm" alt="{{attch}}">
+                             <img ng-if="attch.split('.')[1]=='pdf'" src="images/pdf-icon.png" class="attchicon-xs" alt="PDF file">
+                             <img ng-if="attch.split('.')[1]=='jpg'" src="attachments/{{attch}}" class="attchicon-xs" alt="{{attch}}">
                             </div>
                           <div class="caption">
-<!--                             <h3>Thumbnail label</h3>-->
-                              <br>
                              <p title="{{attch}}">{{attch}}</p>
                             <!-- <p>
                                 <a href="#" class="btn btn-primary" role="button">
@@ -77,7 +75,7 @@
                 </div>
                  <div class="col-md-11 emailBodyContent">
                      To: {{findName(message.msg.from)}}&nbsp;{{'<'+message.msg.from+'>'}}<br>
-                    <textarea id='replyText{{$index}}' placeholder="Reply"></textarea><br>
+                    <textarea id='replyText{{$index}}' placeholder="Reply" ng-model="email.body"></textarea><br>
                      <div data-ng-repeat="attachedFile in email.attached track by $index">
             <span class="glyphicon glyphicon-picture" ng-if="attachedFile.split('.')[1]=='jpg'"></span>
             <span class="glyphicon glyphicon-file" ng-if="attachedFile.split('.')[1]=='pdf'"></span>

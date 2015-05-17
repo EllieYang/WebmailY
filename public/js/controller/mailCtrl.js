@@ -6,7 +6,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
     $scope.spaces = [];
     $scope.email={};
     $scope.email.from = "me";
-    $scope.email.to = "frank.taylor.testing@gmail.com";
+    $scope.email.to = "participant.harrybing@gmail.com";
     $scope.email.subject = "New Message";
     $scope.email.space = "Space Name";
     $scope.email.body = "Type to write the email body";
@@ -503,6 +503,9 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 var content = thread.result;
                 
                 var lastMsg = content.messages[(content.messages.length-1)];
+                
+                if(lastMsg.payload.headers.map(function(x){return x.name}).indexOf("Email-From-Space")!==-1){//Messages sent from Easy Mail
+                console.log(lastMsg);
                 if(lastMsg.labelIds){
                     if(lastMsg.labelIds[0]=="INBOX" || lastMsg.labelIds[0]=="SENT"){
                         var newThread = {'threadData':thread,"messages":[]};
@@ -536,7 +539,8 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                                 });
                                
                                 if(message.payload.parts){
-                                    
+                                    console.log(message);
+                                    console.log(message.payload);
                                     message.payload.parts.forEach(function(part){
                                         if(part.filename && part.filename.length >0){
                                             var attachId = part.body.attachmentId;
@@ -544,7 +548,7 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                                             newMsg.attachments.push(part.filename);
                                             
                                         }else{//Retrieve body data
-
+                                            newMsg.body = part.body;//text/html
                                             if(part.parts){
                                                 newMsg.body = part.parts[1].body;//text/html
                                             }else{
@@ -559,6 +563,10 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                         inboxThreads.push(newThread);
                     }
                 }
+                }else{
+                    //This is normal email messages
+                }
+                
             });
         }
         
@@ -602,7 +610,10 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                 
                 for(var i=0;i<fairyList.length;i++){
                   
-                    var overlap = intersect(fairyList[i],lastMsg.spaceFairy.attachedFairy.toString().split(','));   
+                    var overlap = intersect(fairyList[i],lastMsg.spaceFairy.attachedFairy.toString().split(','));  
+                    console.log(fairyList);
+                    lastMsg.spaceFairy.attachedFairy.toString().split(',');
+                    console.log();
                     if (overlap.length){//has connection
                         elementPos = i;
                         break;
@@ -638,10 +649,11 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
                         var newGroup = {"groupId":"group_request_"+$scope.groups.length+1,"spaces":spaceIds,"name":lastMsg.spaceFairy.groupName,"type":"request","spacesData":[]};
                         
                         lastMsg.spaceFairy.space.forEach(function(space){
-                            
+                            console.log(space.fairyId);
                             
                            var fairyId = space.fairyId[0];//If the sender can send the fairy request, this means space.fairyId[0] must belongs to the sender and this should be the one that the sender wants to share with the recipient.
-                            var temp = {'fairyId':fairyId,'id':'space_request_id','name':space.name,'uniqId':'space_request_'+space.uniqId,'expiryDate':space.expiryDate,'group':newGroup.groupId};
+                            var temp = {'fairyId':[fairyId],'id':'space_request_id','name':space.name,'uniqId':'space_request_'+space.uniqId,'expiryDate':space.expiryDate,'group':newGroup.groupId};
+                            console.log(temp);
                             spaceRequestList.push(temp);
                             newGroup.spacesData.push(temp);
                         });
@@ -788,14 +800,14 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
         emailMsg.attached = $scope.email.attached;
         
         $scope.activeSpaceIndex = $("#activeSpaceIndex").val();
-        emailMsg.body = document.getElementById("replyText"+replyTextIndex).value;
+        //emailMsg.body = document.getElementById("replyText"+replyTextIndex).value;
+        emailMsg.body = $scope.email.body;
         $scope.activeSpace = $scope.spaces[$scope.activeSpaceIndex];
         
         emailMsg.space = JSON.parse(thread.lastMsg.msg.emailFromSpace).name;
         
         /*safeApply($scope,function(){});
         GmailAPIService.sendMessage(emailMsg,$scope.activeSpace,false,false,{},emailMsg.space,thread.lastMsg.msg.spaceFairy.attachedFairy);*/
-        
         
         $http.get('http://0.0.0.0:9001/sendMessage',{params:{
             'emailMsg':emailMsg,
@@ -807,6 +819,8 @@ webmaily.controller("mailController",['$scope','$http','$timeout','$interval','G
             'attachedFairy':thread.lastMsg.msg.spaceFairy.attachedFairy
         }}).success(function(data){
             GmailAPIService.sendMessage(data,emailMsg.threadId);
+            $scope.email.bosy="Type to write the email body";
+            $scope.email.attached = [];
         });
     };
     
